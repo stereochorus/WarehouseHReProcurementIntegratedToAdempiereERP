@@ -184,6 +184,18 @@
             <span x-show="sidebarOpen" class="ml-3 text-sm">Laporan Pengadaan</span>
         </a>
 
+        {{-- ERP System link (hanya ketika DEMO_MODE=false) --}}
+        @if(env('DEMO_MODE', 'true') !== 'true')
+        <div x-show="sidebarOpen" class="px-2 py-1 text-xs font-semibold text-slate-400 uppercase tracking-wider mt-3 mb-1">System</div>
+        <a href="{{ route('adempiere.status') }}"
+           class="nav-item flex items-center px-3 py-2.5 rounded-lg mb-1 text-slate-200 hover:text-white transition-colors {{ request()->routeIs('adempiere.*') ? 'active' : '' }}">
+            <svg class="w-5 h-5 flex-shrink-0 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/>
+            </svg>
+            <span x-show="sidebarOpen" class="ml-3 text-sm">Status ERP</span>
+        </a>
+        @endif
+
     </nav>
 
     <!-- Sidebar toggle (desktop) -->
@@ -214,11 +226,19 @@
 
         <!-- Right side: user info -->
         <div class="flex items-center gap-3">
-            <!-- Demo Badge -->
+            <!-- Demo/ERP Badge -->
+            @if(env('DEMO_MODE', 'true') === 'true')
             <span class="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
                 <span class="w-1.5 h-1.5 bg-amber-500 rounded-full mr-1.5 animate-pulse"></span>
                 DEMO MODE
             </span>
+            @else
+            <a href="{{ route('adempiere.status') }}"
+               class="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 hover:bg-green-200 transition-colors">
+                <span class="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5 animate-pulse"></span>
+                Adempiere ERP
+            </a>
+            @endif
 
             <!-- Notification bell -->
             <button class="relative p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg">
@@ -308,8 +328,13 @@
     <footer class="border-t border-gray-200 px-6 py-3 bg-white">
         <p class="text-xs text-gray-400 text-center">
             {{ config('app.title') }} &copy; {{ date('Y') }} —
-            <span class="text-amber-600 font-medium">DEMO MODE - Simulasi UI/UX</span> —
-            Belum terintegrasi dengan Adempiere ERP
+            @if(env('DEMO_MODE', 'true') === 'true')
+                <span class="text-amber-600 font-medium">DEMO MODE - Simulasi UI/UX</span> —
+                Belum terintegrasi dengan Adempiere ERP
+            @else
+                <span class="text-green-600 font-medium">Mode Produksi</span> —
+                Terintegrasi dengan <a href="{{ route('adempiere.status') }}" class="text-blue-500 hover:underline">Adempiere ERP</a>
+            @endif
         </p>
     </footer>
 </div>

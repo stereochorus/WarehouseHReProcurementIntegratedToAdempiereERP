@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\AdempiereController;
 use App\Http\Controllers\Warehouse\WarehouseController;
 use App\Http\Controllers\HR\HRController;
 use App\Http\Controllers\Procurement\ProcurementController;
@@ -20,6 +21,10 @@ Route::middleware('demo.auth')->group(function () {
 
     // Main Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Adempiere ERP Status & Diagnostics
+    Route::get('/adempiere/status',       [AdempiereController::class, 'status'])->name('adempiere.status');
+    Route::post('/adempiere/clear-cache', [AdempiereController::class, 'clearCache'])->name('adempiere.clear-cache');
 
     // Warehouse Module
     Route::prefix('warehouse')->name('warehouse.')->group(function () {

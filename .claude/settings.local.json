@@ -12,7 +12,8 @@
       "Bash(php -r \"echo defined\\(''WSDL_CACHE_DISK''\\) ? ''WSDL_CACHE_DISK = ''.WSDL_CACHE_DISK : ''NOT defined'';\")",
       "Bash(git add Dockerfile AdempiereConnectDoc.md app/Http/Controllers/HR/HRController.php app/Http/Controllers/Procurement/ProcurementController.php app/Http/Controllers/Warehouse/WarehouseController.php app/Console/ app/Services/ config/adempiere.php)",
       "Bash(git commit:*)",
-      "Bash(git push origin main)"
+      "Bash(git push origin main)",
+      "Bash(\"F:\\\\xampp\\\\php\\\\php.exe\" -r \"echo extension_loaded\\(''soap''\\) ? ''SOAP: AKTIF'' : ''SOAP: TIDAK AKTIF''; echo PHP_EOL;\")"
     ]
   }
 }

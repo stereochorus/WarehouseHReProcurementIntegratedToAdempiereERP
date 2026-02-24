@@ -54,7 +54,9 @@ class WarehouseController extends Controller
 
     public function dashboard()
     {
-        if ($this->isDemo()) {
+        $isDemo = $this->isDemo();
+
+        if ($isDemo) {
             $stats = [
                 'total_items'    => 1247,
                 'total_value'    => 'Rp 4.2 Miliar',
@@ -63,11 +65,16 @@ class WarehouseController extends Controller
                 'today_in'       => 3,
                 'today_out'      => 7,
             ];
-            $movements = array_slice($this->getDummyMovements(), 0, 5);
-            return view('warehouse.dashboard', compact('stats', 'movements'));
+            $movements          = array_slice($this->getDummyMovements(), 0, 5);
+            $adempiereConnected = null;   // null = tidak relevan (DEMO_MODE)
+            $adempiereError     = null;
+            return view('warehouse.dashboard', compact('stats', 'movements', 'isDemo', 'adempiereConnected', 'adempiereError'));
         }
 
         // ── DEMO_MODE=false → data dari Adempiere ──────────────────────────
+        $adempiereConnected = false;
+        $adempiereError     = null;
+
         try {
             $adempiere = $this->adempiere();
             $inventory = $adempiere->getProducts();
@@ -83,13 +90,15 @@ class WarehouseController extends Controller
                 'today_in'    => count(array_filter($movements, fn($m) => $m['type'] === 'Penerimaan')),
                 'today_out'   => count(array_filter($movements, fn($m) => $m['type'] === 'Pengeluaran')),
             ];
+            $adempiereConnected = true;
         } catch (\Throwable $e) {
             Log::warning('[Warehouse Dashboard] Fallback ke dummy: ' . $e->getMessage());
-            $stats = ['total_items'=>0,'total_value'=>'N/A','low_stock'=>0,'pending_gr'=>0,'today_in'=>0,'today_out'=>0];
+            $adempiereError = $e->getMessage();
+            $stats     = ['total_items'=>0,'total_value'=>'N/A','low_stock'=>0,'pending_gr'=>0,'today_in'=>0,'today_out'=>0];
             $movements = [];
         }
 
-        return view('warehouse.dashboard', compact('stats', 'movements'));
+        return view('warehouse.dashboard', compact('stats', 'movements', 'isDemo', 'adempiereConnected', 'adempiereError'));
     }
 
     public function inventory(Request $request)

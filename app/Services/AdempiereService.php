@@ -37,10 +37,11 @@ class AdempiereService
             'user'        => config('adempiere.username'),
             'pass'        => config('adempiere.password'),
             'lang'        => config('adempiere.language'),
-            'ClientID'    => config('adempiere.client_id'),
-            'RoleID'      => config('adempiere.role_id'),
-            'OrgID'       => config('adempiere.org_id'),
-            'WarehouseID' => config('adempiere.warehouse_id'),
+            'ClientID'    => (int) config('adempiere.client_id'),
+            'RoleID'      => (int) config('adempiere.role_id'),
+            'OrgID'       => (int) config('adempiere.org_id'),
+            'WarehouseID' => (int) config('adempiere.warehouse_id'),
+            'stage'       => 0,   // required by ADLoginRequest WSDL (xsd:int)
         ];
     }
 
@@ -60,9 +61,21 @@ class AdempiereService
         return Cache::remember('adempiere_connected', 300, function () {
             try {
                 $client   = $this->makeSoapClient('ADService');
-                $response = $client->login(['LoginRequest' => $this->loginParams]);
-                $result   = $response->LoginResponse->result ?? '';
-                return strtolower($result) === 'success';
+                // WSDL: ADLoginResponse login(ADLoginRequest $ADLoginRequest)
+                // → nama parameter adalah 'ADLoginRequest' (bukan 'in0' atau 'LoginRequest').
+                $response = $client->login(['ADLoginRequest' => $this->loginParams]);
+
+                // WSDL mendefinisikan ADLoginResponse dengan field 'status' (xsd:int),
+                // BUKAN 'result'. XFire membungkus return value dalam property 'return'.
+                // status = 0  → login berhasil
+                // status < 0  → login gagal / kredensial salah
+                $status = $response->return->status
+                       ?? $response->out->status
+                       ?? $response->LoginResponse->status
+                       ?? $response->status
+                       ?? -1;
+
+                return ((int) $status) >= 0;
             } catch (\Throwable $e) {
                 Log::warning('[Adempiere] Koneksi gagal: ' . $e->getMessage());
                 return false;
@@ -387,14 +400,22 @@ class AdempiereService
                 $fieldList[] = ['column' => $col, 'val' => (string) $val];
             }
 
+            // WSDL: WindowTabData queryData(ModelCRUDRequest $ModelCRUDRequest)
+            // → nama parameter adalah 'ModelCRUDRequest'.
+            // ModelCRUD memerlukan: serviceType, TableName, RecordID, Filter,
+            //   RetriveResultAs (Attribute|Element), Action (Create|Read|Update|Delete),
+            //   PageNo, DataRow (opsional).
             $request = [
                 'ModelCRUDRequest' => [
                     'ModelCRUD'      => [
-                        'serviceType' => $serviceType,
-                        'TableName'   => $tableName,
-                        'RecordID'    => 0,
-                        'Action'      => 'Read',
-                        'DataRow'     => ['field' => $fieldList],
+                        'serviceType'      => $serviceType,
+                        'TableName'        => $tableName,
+                        'RecordID'         => 0,
+                        'Filter'           => '',
+                        'RetriveResultAs'  => 'Element',
+                        'Action'           => 'Read',
+                        'PageNo'           => 0,
+                        'DataRow'          => ['field' => $fieldList],
                     ],
                     'ADLoginRequest' => $this->loginParams,
                 ],
@@ -429,14 +450,19 @@ class AdempiereService
                 array_values($fields)
             );
 
+            // WSDL: StandardResponse createData(ModelCRUDRequest $ModelCRUDRequest)
+            // → nama parameter adalah 'ModelCRUDRequest'.
             $request = [
                 'ModelCRUDRequest' => [
                     'ModelCRUD'      => [
-                        'serviceType' => $serviceType,
-                        'TableName'   => $tableName,
-                        'RecordID'    => 0,
-                        'Action'      => 'Create',
-                        'DataRow'     => ['field' => $fieldList],
+                        'serviceType'      => $serviceType,
+                        'TableName'        => $tableName,
+                        'RecordID'         => 0,
+                        'Filter'           => '',
+                        'RetriveResultAs'  => 'Element',
+                        'Action'           => 'Create',
+                        'PageNo'           => 0,
+                        'DataRow'          => ['field' => $fieldList],
                     ],
                     'ADLoginRequest' => $this->loginParams,
                 ],
@@ -498,8 +524,12 @@ class AdempiereService
         // Konversi object SOAP → array
         $data = json_decode(json_encode($response), true);
 
-        // Navigasi ke DataSet > DataRow
-        $dataRows = $data['ModelCRUDResponse']['DataSet']['DataRow'] ?? [];
+        // XFire membungkus return value dalam 'return'.
+        // Coba beberapa path: return > ModelCRUDResponse > DataSet > DataRow
+        $dataRows = $data['return']['ModelCRUDResponse']['DataSet']['DataRow']
+                 ?? $data['out']['ModelCRUDResponse']['DataSet']['DataRow']
+                 ?? $data['ModelCRUDResponse']['DataSet']['DataRow']
+                 ?? [];
 
         if (empty($dataRows)) {
             return [];

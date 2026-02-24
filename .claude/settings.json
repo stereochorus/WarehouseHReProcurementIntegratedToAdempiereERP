@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(\"F:\\\\xampp\\\\php\\\\php.exe\" -r \"echo php_ini_loaded_file\\(\\); echo PHP_EOL;\")",
+      "Bash(where php)",
+      "Bash(\"F:\\\\php-8.4.4-nts-Win32-vs17-x64\\\\php.exe\" -r \"echo extension_loaded\\(''soap''\\) ? ''SOAP: AKTIF'' : ''SOAP: TIDAK AKTIF''; echo PHP_EOL; echo php_ini_loaded_file\\(\\); echo PHP_EOL;\")",
+      "Read(//f/php-8.4.4-nts-Win32-vs17-x64/**)",
+      "Bash(\"F:\\\\php-8.4.4-nts-Win32-vs17-x64\\\\php.exe\" -r \"echo extension_loaded\\(''soap''\\) ? ''SOAP: AKTIF ✓'' : ''SOAP: TIDAK AKTIF''; echo PHP_EOL;\")",
+      "Bash(\"F:\\\\php-8.4.4-nts-Win32-vs17-x64\\\\php.exe\" artisan cache:clear)",
+      "Bash(php artisan cache:clear)"
+    ],
+    "additionalDirectories": [
+      "F:\\php-8.4.4-nts-Win32-vs17-x64"
+    ]
+  }
+}
