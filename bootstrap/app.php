@@ -11,6 +11,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Trust Azure App Service reverse proxy / load balancer
+        $middleware->trustProxies(at: '*');
         $middleware->alias([
             'demo.auth' => \App\Http\Middleware\DemoAuth::class,
         ]);

@@ -6,15 +6,19 @@ echo "  WHR-ePIS Demo — Starting up"
 echo "──────────────────────────────────────────"
 
 # ── 1. Setup .env ─────────────────────────────
+# Azure App Service injects env vars as OS environment variables.
+# We create an empty .env so Laravel does not error, and rely entirely
+# on the Azure-provided environment variables (not .env.example values).
 if [ ! -f .env ]; then
-    echo "[1/4] .env not found — copying from .env.example"
-    cp .env.example .env
+    echo "[1/4] .env not found — creating empty .env (env vars from Azure)"
+    touch .env
 else
-    echo "[1/4] .env found — skipping copy"
+    echo "[1/4] .env found — skipping"
 fi
 
 # ── 2. Generate APP_KEY if missing or empty ───
-APP_KEY_VALUE=$(grep -E "^APP_KEY=" .env | cut -d= -f2-)
+# Check OS env var first (Azure), then fall back to .env file.
+APP_KEY_VALUE="${APP_KEY:-$(grep -E "^APP_KEY=" .env | cut -d= -f2-)}"
 if [ -z "$APP_KEY_VALUE" ] || [ "$APP_KEY_VALUE" = '""' ]; then
     echo "[2/4] Generating APP_KEY..."
     php artisan key:generate --force --ansi
@@ -39,7 +43,7 @@ else
 fi
 
 echo "──────────────────────────────────────────"
-echo "  App ready → http://localhost:8000"
+echo "  App ready → http://localhost:80"
 echo "  Login: admin@demo.com / demo123"
 echo "──────────────────────────────────────────"
 
