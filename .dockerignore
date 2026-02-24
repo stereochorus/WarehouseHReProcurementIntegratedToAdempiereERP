@@ -1,0 +1,44 @@
+# Version control
+.git
+.gitignore
+.gitattributes
+
+# Node (not needed — assets via CDN)
+node_modules
+npm-debug.log*
+package-lock.json
+
+# PHP dependencies (installed inside container)
+vendor
+
+# Laravel runtime / generated files
+storage/framework/cache/data
+storage/framework/sessions
+storage/framework/views
+storage/logs
+bootstrap/cache/*.php
+
+# Environment files (mount or pass via --env-file at runtime)
+.env
+.env.backup
+
+# Development & test files
+tests
+.phpunit*
+phpunit.xml
+
+# IDE / OS files
+.idea
+.vscode
+*.DS_Store
+Thumbs.db
+
+# Docker files (not needed inside image)
+Dockerfile
+docker-entrypoint.sh
+docker-compose*.yml
+.dockerignore
+
+# Docs
+README.md
+todo.md

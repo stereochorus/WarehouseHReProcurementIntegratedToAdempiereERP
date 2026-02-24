@@ -6,12 +6,38 @@
 
 ## Cara Menjalankan Demo
 
+### Opsi 1 — PHP langsung (tanpa Docker)
 ```bash
 # Install dependencies
 composer install
 
 # Jalankan server (tidak perlu npm run dev)
 php artisan serve
+
+# Buka browser: http://localhost:8000
+```
+
+### Opsi 2 — Docker (direkomendasikan)
+```bash
+# Build image & jalankan container
+docker compose up --build
+
+# Atau jalankan di background
+docker compose up --build -d
+
+# Buka browser: http://localhost:8000
+
+# Stop container
+docker compose down
+```
+
+### Opsi 3 — Docker tanpa Compose
+```bash
+# Build image
+docker build -t whr-epis .
+
+# Jalankan container
+docker run -p 8000:8000 --env-file .env whr-epis
 
 # Buka browser: http://localhost:8000
 ```
