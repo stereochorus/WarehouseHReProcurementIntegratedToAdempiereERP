@@ -3,11 +3,23 @@
 namespace App\Http\Controllers\Procurement;
 
 use App\Http\Controllers\Controller;
+use App\Services\AdempiereService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 
 class ProcurementController extends Controller
 {
+    private function isDemo(): bool
+    {
+        return env('DEMO_MODE', 'true') === 'true';
+    }
+
+    private function adempiere(): AdempiereService
+    {
+        return app(AdempiereService::class);
+    }
+
     private function getDummyPRs(): array
     {
         return [
@@ -23,24 +35,63 @@ class ProcurementController extends Controller
 
     public function dashboard()
     {
-        $stats = [
-            'total_pr'         => 160,
-            'pending_approval' => 14,
-            'approved'         => 38,
-            'rejected'         => 8,
-            'total_value'      => 'Rp 2.847.500.000',
-            'this_month_value' => 'Rp 547.000.000',
-        ];
-        $recentPRs      = array_slice($this->getDummyPRs(), 0, 5);
-        $approvalPRs    = array_filter($this->getDummyPRs(), fn($p) => str_starts_with($p['status'], 'Pending'));
+        if ($this->isDemo()) {
+            $stats = [
+                'total_pr'         => 160,
+                'pending_approval' => 14,
+                'approved'         => 38,
+                'rejected'         => 8,
+                'total_value'      => 'Rp 2.847.500.000',
+                'this_month_value' => 'Rp 547.000.000',
+            ];
+            $recentPRs   = array_slice($this->getDummyPRs(), 0, 5);
+            $approvalPRs = array_filter($this->getDummyPRs(), fn($p) => str_starts_with($p['status'], 'Pending'));
+            return view('procurement.dashboard', compact('stats', 'recentPRs', 'approvalPRs'));
+        }
+
+        // ── DEMO_MODE=false → data dari Adempiere ──────────────────────────
+        try {
+            $allPRs      = $this->adempiere()->getRequisitions();
+            $pending     = array_filter($allPRs, fn($p) => str_starts_with($p['status'] ?? '', 'Waiting') || $p['status'] === 'Draft');
+            $approved    = array_filter($allPRs, fn($p) => $p['status'] === 'Approved' || $p['status'] === 'Completed');
+            $totalValue  = array_sum(array_column($allPRs, 'total'));
+            $stats = [
+                'total_pr'         => count($allPRs),
+                'pending_approval' => count($pending),
+                'approved'         => count($approved),
+                'rejected'         => 0,
+                'total_value'      => 'Rp ' . number_format($totalValue, 0, ',', '.'),
+                'this_month_value' => 'Rp -',
+            ];
+            $recentPRs   = array_slice($allPRs, 0, 5);
+            $approvalPRs = $pending;
+        } catch (\Throwable $e) {
+            Log::warning('[Procurement Dashboard] Fallback ke dummy: ' . $e->getMessage());
+            $stats = ['total_pr'=>0,'pending_approval'=>0,'approved'=>0,'rejected'=>0,'total_value'=>'N/A','this_month_value'=>'N/A'];
+            $recentPRs = $approvalPRs = [];
+        }
+
         return view('procurement.dashboard', compact('stats', 'recentPRs', 'approvalPRs'));
     }
 
     public function purchaseRequests(Request $request)
     {
-        $prs    = $this->getDummyPRs();
         $search = $request->get('search', '');
         $status = $request->get('status', '');
+
+        if ($this->isDemo()) {
+            $prs    = $this->getDummyPRs();
+            $allPRs = $this->getDummyPRs();
+        } else {
+            try {
+                $prs    = $this->adempiere()->getRequisitions();
+                $allPRs = $prs;
+            } catch (\Throwable $e) {
+                Log::warning('[Procurement PRs] Fallback ke dummy: ' . $e->getMessage());
+                $prs    = $this->getDummyPRs();
+                $allPRs = $this->getDummyPRs();
+            }
+        }
 
         if ($search) {
             $prs = array_filter($prs, fn($p) =>
@@ -51,7 +102,7 @@ class ProcurementController extends Controller
             $prs = array_filter($prs, fn($p) => $p['status'] === $status);
         }
 
-        $statuses = array_unique(array_column($this->getDummyPRs(), 'status'));
+        $statuses = array_unique(array_column($allPRs, 'status'));
         return view('procurement.purchase-requests', compact('prs', 'search', 'status', 'statuses'));
     }
 
@@ -72,17 +123,43 @@ class ProcurementController extends Controller
             'reason'    => 'required|string',
         ]);
 
-        $prId    = 'PR-' . date('Y') . '-' . str_pad(rand(161, 999), 4, '0', STR_PAD_LEFT);
-        $total   = number_format($request->qty * $request->est_price, 0, ',', '.');
+        $total = number_format($request->qty * $request->est_price, 0, ',', '.');
 
-        return redirect()->route('procurement.purchase-requests')
-            ->with('success', "Purchase Request berhasil dibuat! No. PR: {$prId}, Total: Rp {$total} (simulasi). Status: Pending Manager Approval.");
+        if ($this->isDemo()) {
+            $prId = 'PR-' . date('Y') . '-' . str_pad(rand(161, 999), 4, '0', STR_PAD_LEFT);
+            return redirect()->route('procurement.purchase-requests')
+                ->with('success', "Purchase Request berhasil dibuat! No. PR: {$prId}, Total: Rp {$total} (simulasi). Status: Pending Manager Approval.");
+        }
+
+        // ── DEMO_MODE=false → buat Requisition di Adempiere ───────────────
+        try {
+            $this->adempiere()->createRequisition($request->only('dept', 'item', 'qty', 'unit', 'est_price', 'reason'));
+            $prId = 'PR-' . date('Y') . '-' . str_pad(rand(161, 999), 4, '0', STR_PAD_LEFT);
+            return redirect()->route('procurement.purchase-requests')
+                ->with('success', "Purchase Request berhasil dibuat di Adempiere! Total: Rp {$total}. Status: Draft.");
+        } catch (\Throwable $e) {
+            Log::error('[Procurement storePR] ' . $e->getMessage());
+            return redirect()->route('procurement.purchase-requests')
+                ->with('error', 'Gagal membuat Requisition di Adempiere: ' . $e->getMessage());
+        }
     }
 
     public function approvals()
     {
-        $pendingPRs = array_filter($this->getDummyPRs(), fn($p) => str_starts_with($p['status'], 'Pending'));
-        $user       = Session::get('demo_user');
+        $user = Session::get('demo_user');
+
+        if ($this->isDemo()) {
+            $pendingPRs = array_filter($this->getDummyPRs(), fn($p) => str_starts_with($p['status'], 'Pending'));
+        } else {
+            try {
+                $all        = $this->adempiere()->getRequisitions();
+                $pendingPRs = array_filter($all, fn($p) => in_array($p['status'] ?? '', ['Draft', 'Waiting Approval', 'In Progress']));
+            } catch (\Throwable $e) {
+                Log::warning('[Procurement Approvals] Fallback ke dummy: ' . $e->getMessage());
+                $pendingPRs = array_filter($this->getDummyPRs(), fn($p) => str_starts_with($p['status'], 'Pending'));
+            }
+        }
+
         return view('procurement.approvals', compact('pendingPRs', 'user'));
     }
 
@@ -105,7 +182,16 @@ class ProcurementController extends Controller
 
     public function reports()
     {
-        $prs = $this->getDummyPRs();
+        if ($this->isDemo()) {
+            $prs = $this->getDummyPRs();
+        } else {
+            try {
+                $prs = $this->adempiere()->getRequisitions();
+            } catch (\Throwable $e) {
+                Log::warning('[Procurement Reports] Fallback ke dummy: ' . $e->getMessage());
+                $prs = $this->getDummyPRs();
+            }
+        }
         return view('procurement.reports', compact('prs'));
     }
 }

@@ -25,6 +25,7 @@ RUN apt-get update && apt-get install -y \
         pgsql \
         mbstring \
         xml \
+        soap \
         ctype \
         bcmath \
         zip \

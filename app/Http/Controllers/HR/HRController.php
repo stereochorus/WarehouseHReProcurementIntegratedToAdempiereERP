@@ -3,10 +3,22 @@
 namespace App\Http\Controllers\HR;
 
 use App\Http\Controllers\Controller;
+use App\Services\AdempiereService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class HRController extends Controller
 {
+    private function isDemo(): bool
+    {
+        return env('DEMO_MODE', 'true') === 'true';
+    }
+
+    private function adempiere(): AdempiereService
+    {
+        return app(AdempiereService::class);
+    }
+
     private function getDummyEmployees(): array
     {
         return [
@@ -63,9 +75,22 @@ class HRController extends Controller
 
     public function employees(Request $request)
     {
-        $employees = $this->getDummyEmployees();
-        $search    = $request->get('search', '');
-        $dept      = $request->get('dept', '');
+        $search = $request->get('search', '');
+        $dept   = $request->get('dept', '');
+
+        if ($this->isDemo()) {
+            $employees  = $this->getDummyEmployees();
+            $allForMeta = $this->getDummyEmployees();
+        } else {
+            try {
+                $employees  = $this->adempiere()->getEmployees();
+                $allForMeta = $employees;
+            } catch (\Throwable $e) {
+                Log::warning('[HR Employees] Fallback ke dummy: ' . $e->getMessage());
+                $employees  = $this->getDummyEmployees();
+                $allForMeta = $this->getDummyEmployees();
+            }
+        }
 
         if ($search) {
             $employees = array_filter($employees, fn($e) =>
@@ -76,7 +101,7 @@ class HRController extends Controller
             $employees = array_filter($employees, fn($e) => $e['dept'] === $dept);
         }
 
-        $depts = array_unique(array_column($this->getDummyEmployees(), 'dept'));
+        $depts = array_unique(array_column($allForMeta, 'dept'));
         return view('hr.employees', compact('employees', 'search', 'dept', 'depts'));
     }
 
