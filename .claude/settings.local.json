@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(php --version && composer --version && node --version && npm --version 2>/dev/null)",
+      "Bash(tail:*)",
+      "Bash(cp:*)",
+      "Bash(head:*)",
+      "Bash(grep:*)",
+      "Bash(curl:*)"
+    ]
+  }
+}
