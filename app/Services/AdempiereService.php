@@ -29,6 +29,9 @@ class AdempiereService
     /** Base URL ADInterface (tanpa trailing slash) */
     private string $baseUrl;
 
+    /** Namespace ADInterface XFire */
+    private string $soapNamespace = 'http://3e.pl/ADInterface';
+
     public function __construct()
     {
         $this->baseUrl = rtrim(config('adempiere.base_url'), '/');
@@ -60,22 +63,49 @@ class AdempiereService
     {
         return Cache::remember('adempiere_connected', 300, function () {
             try {
-                $client   = $this->makeSoapClient('ADService');
-                // WSDL: ADLoginResponse login(ADLoginRequest $ADLoginRequest)
-                // → nama parameter adalah 'ADLoginRequest' (bukan 'in0' atau 'LoginRequest').
-                $response = $client->login(['ADLoginRequest' => $this->loginParams]);
+                // Step 1: Cek reachability via getVersion() (no auth needed)
+                $adClient = new \SoapClient(null, [
+                    'location'           => "{$this->baseUrl}/ADService",
+                    'uri'                => $this->soapNamespace,
+                    'soap_version'       => SOAP_1_1,
+                    'style'              => SOAP_RPC,
+                    'use'                => SOAP_LITERAL,
+                    'exceptions'         => true,
+                    'connection_timeout' => config('adempiere.soap_timeout', 10),
+                ]);
+                $version = $adClient->getVersion();
+                if (empty($version)) {
+                    return false;
+                }
 
-                // WSDL mendefinisikan ADLoginResponse dengan field 'status' (xsd:int),
-                // BUKAN 'result'. XFire membungkus return value dalam property 'return'.
-                // status = 0  → login berhasil
-                // status < 0  → login gagal / kredensial salah
-                $status = $response->return->status
-                       ?? $response->out->status
-                       ?? $response->LoginResponse->status
-                       ?? $response->status
-                       ?? -1;
+                // Step 2: Cek credentials via ModelADService (embedded ADLoginRequest)
+                // Jika Adempiere membalas "Service type not configured" (bukan auth error),
+                // berarti koneksi + credentials valid.
+                $rawXml = '<ModelCRUDRequest xmlns="' . $this->soapNamespace . '">'
+                        . '<ModelCRUD>'
+                        . '<serviceType></serviceType>'
+                        . '<TableName>AD_Client</TableName>'
+                        . '<RecordID>0</RecordID>'
+                        . '<Filter></Filter>'
+                        . '<RetriveResultAs>Element</RetriveResultAs>'
+                        . '<Action>Read</Action>'
+                        . '<PageNo>0</PageNo>'
+                        . '</ModelCRUD>'
+                        . '<ADLoginRequest>' . $this->buildLoginXml() . '</ADLoginRequest>'
+                        . '</ModelCRUDRequest>';
 
-                return ((int) $status) >= 0;
+                $modelClient = $this->makeNonWsdlClient('ModelADService');
+                $response    = $modelClient->queryData(new \SoapVar($rawXml, XSD_ANYXML));
+
+                // Response bisa berupa object dengan property 'Error' (bukan exception).
+                // Jika mengandung kata kunci login/credential → auth gagal.
+                $responseStr = strtolower(json_encode($response) ?: '');
+                $authFailed  = str_contains($responseStr, 'you need to login')
+                            || str_contains($responseStr, 'invalid credential')
+                            || str_contains($responseStr, 'login failed');
+
+                return !$authFailed;
+
             } catch (\Throwable $e) {
                 Log::warning('[Adempiere] Koneksi gagal: ' . $e->getMessage());
                 return false;
@@ -392,36 +422,32 @@ class AdempiereService
     public function queryData(string $serviceType, string $tableName, array $filters = []): array
     {
         try {
-            $client = $this->makeSoapClient('ModelADService');
+            $client = $this->makeNonWsdlClient('ModelADService');
 
-            // Build filter fields
-            $fieldList = [];
+            // Build DataRow XML dari filters
+            $dataRowXml = '';
             foreach ($filters as $col => $val) {
-                $fieldList[] = ['column' => $col, 'val' => (string) $val];
+                $dataRowXml .= '<field column="' . htmlspecialchars($col, ENT_XML1) . '">'
+                             . '<val>' . htmlspecialchars((string) $val, ENT_XML1) . '</val>'
+                             . '</field>';
             }
 
-            // WSDL: WindowTabData queryData(ModelCRUDRequest $ModelCRUDRequest)
-            // → nama parameter adalah 'ModelCRUDRequest'.
-            // ModelCRUD memerlukan: serviceType, TableName, RecordID, Filter,
-            //   RetriveResultAs (Attribute|Element), Action (Create|Read|Update|Delete),
-            //   PageNo, DataRow (opsional).
-            $request = [
-                'ModelCRUDRequest' => [
-                    'ModelCRUD'      => [
-                        'serviceType'      => $serviceType,
-                        'TableName'        => $tableName,
-                        'RecordID'         => 0,
-                        'Filter'           => '',
-                        'RetriveResultAs'  => 'Element',
-                        'Action'           => 'Read',
-                        'PageNo'           => 0,
-                        'DataRow'          => ['field' => $fieldList],
-                    ],
-                    'ADLoginRequest' => $this->loginParams,
-                ],
-            ];
+            // Gunakan XSD_ANYXML untuk namespace eksplisit (diperlukan oleh XFire)
+            $rawXml = '<ModelCRUDRequest xmlns="' . $this->soapNamespace . '">'
+                    . '<ModelCRUD>'
+                    . '<serviceType>'      . htmlspecialchars($serviceType, ENT_XML1) . '</serviceType>'
+                    . '<TableName>'        . htmlspecialchars($tableName,   ENT_XML1) . '</TableName>'
+                    . '<RecordID>0</RecordID>'
+                    . '<Filter></Filter>'
+                    . '<RetriveResultAs>Element</RetriveResultAs>'
+                    . '<Action>Read</Action>'
+                    . '<PageNo>0</PageNo>'
+                    . ($dataRowXml ? '<DataRow>' . $dataRowXml . '</DataRow>' : '')
+                    . '</ModelCRUD>'
+                    . '<ADLoginRequest>' . $this->buildLoginXml() . '</ADLoginRequest>'
+                    . '</ModelCRUDRequest>';
 
-            $response = $client->queryData($request);
+            $response = $client->queryData(new \SoapVar($rawXml, XSD_ANYXML));
             return $this->parseDataSet($response);
 
         } catch (\Throwable $e) {
@@ -442,33 +468,30 @@ class AdempiereService
     public function createData(string $serviceType, string $tableName, array $fields): array
     {
         try {
-            $client = $this->makeSoapClient('ModelADService');
+            $client = $this->makeNonWsdlClient('ModelADService');
 
-            $fieldList = array_map(
-                fn($col, $val) => ['column' => $col, 'val' => (string) $val],
-                array_keys($fields),
-                array_values($fields)
-            );
+            $dataRowXml = '';
+            foreach ($fields as $col => $val) {
+                $dataRowXml .= '<field column="' . htmlspecialchars($col, ENT_XML1) . '">'
+                             . '<val>' . htmlspecialchars((string) $val, ENT_XML1) . '</val>'
+                             . '</field>';
+            }
 
-            // WSDL: StandardResponse createData(ModelCRUDRequest $ModelCRUDRequest)
-            // → nama parameter adalah 'ModelCRUDRequest'.
-            $request = [
-                'ModelCRUDRequest' => [
-                    'ModelCRUD'      => [
-                        'serviceType'      => $serviceType,
-                        'TableName'        => $tableName,
-                        'RecordID'         => 0,
-                        'Filter'           => '',
-                        'RetriveResultAs'  => 'Element',
-                        'Action'           => 'Create',
-                        'PageNo'           => 0,
-                        'DataRow'          => ['field' => $fieldList],
-                    ],
-                    'ADLoginRequest' => $this->loginParams,
-                ],
-            ];
+            $rawXml = '<ModelCRUDRequest xmlns="' . $this->soapNamespace . '">'
+                    . '<ModelCRUD>'
+                    . '<serviceType>'      . htmlspecialchars($serviceType, ENT_XML1) . '</serviceType>'
+                    . '<TableName>'        . htmlspecialchars($tableName,   ENT_XML1) . '</TableName>'
+                    . '<RecordID>0</RecordID>'
+                    . '<Filter></Filter>'
+                    . '<RetriveResultAs>Element</RetriveResultAs>'
+                    . '<Action>Create</Action>'
+                    . '<PageNo>0</PageNo>'
+                    . '<DataRow>' . $dataRowXml . '</DataRow>'
+                    . '</ModelCRUD>'
+                    . '<ADLoginRequest>' . $this->buildLoginXml() . '</ADLoginRequest>'
+                    . '</ModelCRUDRequest>';
 
-            $response = $client->createData($request);
+            $response = $client->createData(new \SoapVar($rawXml, XSD_ANYXML));
             return json_decode(json_encode($response), true) ?? [];
 
         } catch (\Throwable $e) {
@@ -482,7 +505,51 @@ class AdempiereService
     // ═══════════════════════════════════════════════════════════════════════════
 
     /**
-     * Buat SoapClient untuk service tertentu (CompiereService atau ModelADService).
+     * Buat non-WSDL SoapClient (RPC/literal) untuk service tertentu.
+     * Non-WSDL mode diperlukan untuk XFire ADInterface agar namespace element
+     * bisa dikontrol secara eksplisit via XSD_ANYXML.
+     */
+    private function makeNonWsdlClient(string $service): \SoapClient
+    {
+        if (!extension_loaded('soap')) {
+            throw new \RuntimeException(
+                'PHP extension "soap" belum aktif. ' .
+                'Aktifkan dengan menambahkan "extension=soap" di php.ini, lalu restart server.'
+            );
+        }
+
+        return new \SoapClient(null, [
+            'location'           => "{$this->baseUrl}/{$service}",
+            'uri'                => $this->soapNamespace,
+            'soap_version'       => SOAP_1_1,
+            'style'              => SOAP_RPC,
+            'use'                => SOAP_LITERAL,
+            'exceptions'         => true,
+            'trace'              => config('adempiere.soap_trace', false),
+            'connection_timeout' => config('adempiere.soap_timeout', 10),
+        ]);
+    }
+
+    /**
+     * Build XML string untuk ADLoginRequest (tanpa tag wrapper, sudah termasuk children).
+     */
+    private function buildLoginXml(): string
+    {
+        $esc = fn(string $v) => htmlspecialchars($v, ENT_XML1 | ENT_QUOTES, 'UTF-8');
+        $p   = $this->loginParams;
+        return '<user>'        . $esc((string) ($p['user']        ?? '')) . '</user>'
+             . '<pass>'        . $esc((string) ($p['pass']        ?? '')) . '</pass>'
+             . '<lang>'        . $esc((string) ($p['lang']        ?? '')) . '</lang>'
+             . '<ClientID>'    . intval($p['ClientID']    ?? 0)           . '</ClientID>'
+             . '<RoleID>'      . intval($p['RoleID']      ?? 0)           . '</RoleID>'
+             . '<OrgID>'       . intval($p['OrgID']       ?? 0)           . '</OrgID>'
+             . '<WarehouseID>' . intval($p['WarehouseID'] ?? 0)           . '</WarehouseID>'
+             . '<stage>'       . intval($p['stage']       ?? 0)           . '</stage>';
+    }
+
+    /**
+     * Buat SoapClient WSDL-based (untuk backward compat / fallback).
+     * @deprecated Gunakan makeNonWsdlClient() untuk ADInterface XFire.
      */
     private function makeSoapClient(string $service): \SoapClient
     {

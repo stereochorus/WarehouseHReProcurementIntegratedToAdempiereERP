@@ -96,7 +96,7 @@
 
                 <div class="flex-1 min-w-0">
                     <p class="text-sm font-medium text-gray-800">{{ $check['label'] }}</p>
-                    <p class="text-xs text-gray-500 mt-0.5 break-words">{{ $check['msg'] }}</p>
+                    <p class="text-xs text-gray-500 mt-0.5 break-words">{!! $check['msg'] !!}</p>
                     @if(isset($check['url']))
                     <a href="{{ $check['url'] }}" target="_blank"
                        class="text-xs text-blue-500 hover:text-blue-700 mt-0.5 inline-block break-all">
