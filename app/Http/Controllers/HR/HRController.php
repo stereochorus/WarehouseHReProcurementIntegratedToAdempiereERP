@@ -458,4 +458,124 @@ class HRController extends Controller
         $overtime   = $this->getDummyOvertime();
         return view('hr.leave-reports', compact('leaves', 'sickLeaves', 'overtime'));
     }
+
+    // ─── FORM IZIN ─────────────────────────────────────────────────
+    private function getDummyIzin(): array
+    {
+        return [
+            ['no'=>'IZN-2024-011','tanggal'=>'24 Feb 2024','karyawan'=>'Fitri Handayani','dept'=>'Marketing','jenis'=>'Izin Sakit','tanggal_izin'=>'24 Feb 2024','alasan'=>'Tidak enak badan','status'=>'Disetujui'],
+            ['no'=>'IZN-2024-010','tanggal'=>'23 Feb 2024','karyawan'=>'Ahmad Fauzi','dept'=>'IT','jenis'=>'Izin Keluar','tanggal_izin'=>'23 Feb 2024','alasan'=>'Urusan bank','status'=>'Disetujui'],
+            ['no'=>'IZN-2024-009','tanggal'=>'22 Feb 2024','karyawan'=>'Dewi Kusuma','dept'=>'Finance','jenis'=>'Izin Terlambat','tanggal_izin'=>'22 Feb 2024','alasan'=>'Kemacetan parah','status'=>'Disetujui'],
+            ['no'=>'IZN-2024-008','tanggal'=>'21 Feb 2024','karyawan'=>'Irwan Saputra','dept'=>'Finance','jenis'=>'Izin Keluar','tanggal_izin'=>'21 Feb 2024','alasan'=>'Dokter spesialis','status'=>'Ditolak'],
+            ['no'=>'IZN-2024-007','tanggal'=>'20 Feb 2024','karyawan'=>'Budi Santoso','dept'=>'Warehouse','jenis'=>'Izin Sakit','tanggal_izin'=>'20 Feb 2024','alasan'=>'Demam tinggi','status'=>'Menunggu'],
+        ];
+    }
+
+    public function formIzin()
+    {
+        $izin = $this->getDummyIzin();
+        return view('hr.izin', compact('izin'));
+    }
+
+    public function storeIzin(Request $request)
+    {
+        $request->validate([
+            'karyawan'    => 'required|string',
+            'jenis'       => 'required|string',
+            'tanggal_izin'=> 'required|date',
+            'alasan'      => 'required|string',
+        ]);
+        $no = 'IZN-' . date('Y') . '-' . str_pad(rand(12, 999), 3, '0', STR_PAD_LEFT);
+        return redirect()->route('hr.izin')
+            ->with('success', "Form izin berhasil diajukan! No: {$no}. Menunggu persetujuan atasan.");
+    }
+
+    // ─── PENGAJUAN DINAS ───────────────────────────────────────────
+    private function getDummyDinas(): array
+    {
+        return [
+            ['no'=>'DNS-2024-015','tanggal'=>'24 Feb 2024','karyawan'=>'Gunawan Hadi','dept'=>'Operations','lokasi'=>'Surabaya','tgl_mulai'=>'27 Feb 2024','tgl_selesai'=>'29 Feb 2024','tujuan'=>'Audit operasional cabang','status'=>'Disetujui'],
+            ['no'=>'DNS-2024-014','tanggal'=>'22 Feb 2024','karyawan'=>'Eko Prasetyo','dept'=>'Procurement','lokasi'=>'Bandung','tgl_mulai'=>'25 Feb 2024','tgl_selesai'=>'26 Feb 2024','tujuan'=>'Negosiasi kontrak vendor','status'=>'Menunggu'],
+            ['no'=>'DNS-2024-013','tanggal'=>'21 Feb 2024','karyawan'=>'Ahmad Fauzi','dept'=>'IT','lokasi'=>'Bali','tgl_mulai'=>'01 Mar 2024','tgl_selesai'=>'03 Mar 2024','tujuan'=>'Seminar teknologi','status'=>'Disetujui'],
+            ['no'=>'DNS-2024-012','tanggal'=>'20 Feb 2024','karyawan'=>'Dewi Kusuma','dept'=>'Finance','lokasi'=>'Medan','tgl_mulai'=>'22 Feb 2024','tgl_selesai'=>'23 Feb 2024','tujuan'=>'Laporan keuangan regional','status'=>'Disetujui'],
+            ['no'=>'DNS-2024-011','tanggal'=>'18 Feb 2024','karyawan'=>'Siti Rahayu','dept'=>'HR','lokasi'=>'Yogyakarta','tgl_mulai'=>'19 Feb 2024','tgl_selesai'=>'19 Feb 2024','tujuan'=>'Rekrutmen karyawan baru','status'=>'Ditolak'],
+        ];
+    }
+
+    public function pengajuanDinas()
+    {
+        $dinas = $this->getDummyDinas();
+        return view('hr.pengajuan-dinas', compact('dinas'));
+    }
+
+    public function storePengajuanDinas(Request $request)
+    {
+        $request->validate([
+            'karyawan'    => 'required|string',
+            'lokasi'      => 'required|string',
+            'tgl_mulai'   => 'required|date',
+            'tgl_selesai' => 'required|date|after_or_equal:tgl_mulai',
+            'tujuan'      => 'required|string',
+        ]);
+        $no = 'DNS-' . date('Y') . '-' . str_pad(rand(16, 999), 3, '0', STR_PAD_LEFT);
+        return redirect()->route('hr.pengajuan-dinas')
+            ->with('success', "Pengajuan dinas berhasil diajukan! No: {$no}. Menunggu persetujuan manager.");
+    }
+
+    // ─── PENGAJUAN SPJ ─────────────────────────────────────────────
+    private function getDummySpj(): array
+    {
+        return [
+            ['no'=>'SPJ-2024-009','tanggal'=>'24 Feb 2024','karyawan'=>'Gunawan Hadi','lokasi'=>'Surabaya','tgl_dinas'=>'20-22 Feb 2024','biaya_transport'=>1200000,'biaya_hotel'=>900000,'biaya_makan'=>450000,'total'=>2550000,'status'=>'Disetujui'],
+            ['no'=>'SPJ-2024-008','tanggal'=>'20 Feb 2024','karyawan'=>'Eko Prasetyo','lokasi'=>'Bandung','tgl_dinas'=>'15-16 Feb 2024','biaya_transport'=>350000,'biaya_hotel'=>600000,'biaya_makan'=>200000,'total'=>1150000,'status'=>'Menunggu'],
+            ['no'=>'SPJ-2024-007','tanggal'=>'18 Feb 2024','karyawan'=>'Ahmad Fauzi','lokasi'=>'Jakarta','tgl_dinas'=>'14 Feb 2024','biaya_transport'=>150000,'biaya_hotel'=>0,'biaya_makan'=>100000,'total'=>250000,'status'=>'Disetujui'],
+            ['no'=>'SPJ-2024-006','tanggal'=>'15 Feb 2024','karyawan'=>'Dewi Kusuma','lokasi'=>'Medan','tgl_dinas'=>'10-12 Feb 2024','biaya_transport'=>2100000,'biaya_hotel'=>1200000,'biaya_makan'=>600000,'total'=>3900000,'status'=>'Disetujui'],
+        ];
+    }
+
+    public function pengajuanSpj()
+    {
+        $spj = $this->getDummySpj();
+        return view('hr.pengajuan-spj', compact('spj'));
+    }
+
+    public function storePengajuanSpj(Request $request)
+    {
+        $request->validate([
+            'karyawan'         => 'required|string',
+            'lokasi'           => 'required|string',
+            'tgl_dinas'        => 'required|string',
+            'biaya_transport'  => 'required|numeric|min:0',
+            'biaya_hotel'      => 'required|numeric|min:0',
+            'biaya_makan'      => 'required|numeric|min:0',
+        ]);
+        $no    = 'SPJ-' . date('Y') . '-' . str_pad(rand(10, 999), 3, '0', STR_PAD_LEFT);
+        $total = $request->biaya_transport + $request->biaya_hotel + $request->biaya_makan;
+        return redirect()->route('hr.pengajuan-spj')
+            ->with('success', "Pengajuan SPJ berhasil diajukan! No: {$no}. Total: Rp " . number_format($total, 0, ',', '.') . ". Menunggu verifikasi keuangan.");
+    }
+
+    // ─── LAPORAN TUNJANGAN PERBULAN ────────────────────────────────
+    private function getDummyTunjangan(): array
+    {
+        return [
+            ['nama'=>'Ahmad Fauzi',    'dept'=>'IT',         'jabatan'=>'System Analyst',        'gaji_pokok'=>12000000,'tunjangan_transport'=>500000,'tunjangan_makan'=>400000,'tunjangan_jabatan'=>1500000,'total_tunjangan'=>2400000,'take_home'=>14400000],
+            ['nama'=>'Budi Santoso',   'dept'=>'Warehouse',  'jabatan'=>'Warehouse Supervisor',  'gaji_pokok'=>9500000, 'tunjangan_transport'=>400000,'tunjangan_makan'=>350000,'tunjangan_jabatan'=>1000000,'total_tunjangan'=>1750000,'take_home'=>11250000],
+            ['nama'=>'Siti Rahayu',    'dept'=>'HR',         'jabatan'=>'HR Officer',            'gaji_pokok'=>8500000, 'tunjangan_transport'=>350000,'tunjangan_makan'=>300000,'tunjangan_jabatan'=>750000, 'total_tunjangan'=>1400000,'take_home'=>9900000],
+            ['nama'=>'Dewi Kusuma',    'dept'=>'Finance',    'jabatan'=>'Finance Analyst',       'gaji_pokok'=>10000000,'tunjangan_transport'=>450000,'tunjangan_makan'=>350000,'tunjangan_jabatan'=>1200000,'total_tunjangan'=>2000000,'take_home'=>12000000],
+            ['nama'=>'Eko Prasetyo',   'dept'=>'Procurement','jabatan'=>'Procurement Officer',   'gaji_pokok'=>9000000, 'tunjangan_transport'=>400000,'tunjangan_makan'=>300000,'tunjangan_jabatan'=>900000, 'total_tunjangan'=>1600000,'take_home'=>10600000],
+            ['nama'=>'Fitri Handayani','dept'=>'Marketing',  'jabatan'=>'Marketing Executive',   'gaji_pokok'=>8000000, 'tunjangan_transport'=>350000,'tunjangan_makan'=>300000,'tunjangan_jabatan'=>750000, 'total_tunjangan'=>1400000,'take_home'=>9400000],
+            ['nama'=>'Gunawan Hadi',   'dept'=>'Operations', 'jabatan'=>'Operations Manager',    'gaji_pokok'=>15000000,'tunjangan_transport'=>600000,'tunjangan_makan'=>500000,'tunjangan_jabatan'=>2500000,'total_tunjangan'=>3600000,'take_home'=>18600000],
+            ['nama'=>'Hana Pertiwi',   'dept'=>'IT',         'jabatan'=>'Frontend Developer',    'gaji_pokok'=>11000000,'tunjangan_transport'=>450000,'tunjangan_makan'=>350000,'tunjangan_jabatan'=>1000000,'total_tunjangan'=>1800000,'take_home'=>12800000],
+            ['nama'=>'Irwan Saputra',  'dept'=>'Finance',    'jabatan'=>'Accounting Staff',      'gaji_pokok'=>8200000, 'tunjangan_transport'=>350000,'tunjangan_makan'=>300000,'tunjangan_jabatan'=>600000, 'total_tunjangan'=>1250000,'take_home'=>9450000],
+            ['nama'=>'Joko Widodo',    'dept'=>'HR',         'jabatan'=>'HR Manager',            'gaji_pokok'=>16000000,'tunjangan_transport'=>600000,'tunjangan_makan'=>500000,'tunjangan_jabatan'=>3000000,'total_tunjangan'=>4100000,'take_home'=>20100000],
+        ];
+    }
+
+    public function tunjanganReport()
+    {
+        $tunjangan = $this->getDummyTunjangan();
+        $bulan     = request('bulan', date('Y-m'));
+        return view('hr.tunjangan', compact('tunjangan', 'bulan'));
+    }
 }

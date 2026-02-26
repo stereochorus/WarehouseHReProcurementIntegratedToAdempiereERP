@@ -112,6 +112,16 @@
             <svg class="w-5 h-5 flex-shrink-0 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
             <span x-show="sidebarOpen" class="ml-3 text-sm">Laporan Stok</span>
         </a>
+        <a href="{{ route('warehouse.surat-jalan') }}"
+           class="nav-item flex items-center px-3 py-2.5 rounded-lg mb-1 text-slate-200 hover:text-white transition-colors {{ request()->routeIs('warehouse.surat-jalan*') ? 'active' : '' }}">
+            <svg class="w-5 h-5 flex-shrink-0 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <span x-show="sidebarOpen" class="ml-3 text-sm">Surat Jalan</span>
+        </a>
+        <a href="{{ route('warehouse.req-atk') }}"
+           class="nav-item flex items-center px-3 py-2.5 rounded-lg mb-1 text-slate-200 hover:text-white transition-colors {{ request()->routeIs('warehouse.req-atk*') ? 'active' : '' }}">
+            <svg class="w-5 h-5 flex-shrink-0 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 4v12l-4-2-4 2V4M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            <span x-show="sidebarOpen" class="ml-3 text-sm">Req ATK</span>
+        </a>
 
         <!-- HR Module -->
         <div x-show="sidebarOpen" class="px-2 py-1 text-xs font-semibold text-slate-400 uppercase tracking-wider mt-3 mb-1">Human Resource</div>
@@ -160,6 +170,26 @@
             <svg class="w-5 h-5 flex-shrink-0 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
             <span x-show="sidebarOpen" class="ml-3 text-sm">Laporan Cuti/Sakit/Lembur</span>
         </a>
+        <a href="{{ route('hr.izin') }}"
+           class="nav-item flex items-center px-3 py-2.5 rounded-lg mb-1 text-slate-200 hover:text-white transition-colors {{ request()->routeIs('hr.izin*') ? 'active' : '' }}">
+            <svg class="w-5 h-5 flex-shrink-0 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+            <span x-show="sidebarOpen" class="ml-3 text-sm">Form Izin</span>
+        </a>
+        <a href="{{ route('hr.pengajuan-dinas') }}"
+           class="nav-item flex items-center px-3 py-2.5 rounded-lg mb-1 text-slate-200 hover:text-white transition-colors {{ request()->routeIs('hr.pengajuan-dinas*') ? 'active' : '' }}">
+            <svg class="w-5 h-5 flex-shrink-0 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span x-show="sidebarOpen" class="ml-3 text-sm">Pengajuan Dinas</span>
+        </a>
+        <a href="{{ route('hr.pengajuan-spj') }}"
+           class="nav-item flex items-center px-3 py-2.5 rounded-lg mb-1 text-slate-200 hover:text-white transition-colors {{ request()->routeIs('hr.pengajuan-spj*') ? 'active' : '' }}">
+            <svg class="w-5 h-5 flex-shrink-0 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+            <span x-show="sidebarOpen" class="ml-3 text-sm">Pengajuan SPJ</span>
+        </a>
+        <a href="{{ route('hr.tunjangan') }}"
+           class="nav-item flex items-center px-3 py-2.5 rounded-lg mb-1 text-slate-200 hover:text-white transition-colors {{ request()->routeIs('hr.tunjangan*') ? 'active' : '' }}">
+            <svg class="w-5 h-5 flex-shrink-0 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+            <span x-show="sidebarOpen" class="ml-3 text-sm">Laporan Tunjangan</span>
+        </a>
 
         <!-- Procurement Module -->
         <div x-show="sidebarOpen" class="px-2 py-1 text-xs font-semibold text-slate-400 uppercase tracking-wider mt-3 mb-1">eProcurement</div>
@@ -182,6 +212,52 @@
            class="nav-item flex items-center px-3 py-2.5 rounded-lg mb-1 text-slate-200 hover:text-white transition-colors {{ request()->routeIs('procurement.reports') ? 'active' : '' }}">
             <svg class="w-5 h-5 flex-shrink-0 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
             <span x-show="sidebarOpen" class="ml-3 text-sm">Laporan Pengadaan</span>
+        </a>
+        <a href="{{ route('procurement.material-request') }}"
+           class="nav-item flex items-center px-3 py-2.5 rounded-lg mb-1 text-slate-200 hover:text-white transition-colors {{ request()->routeIs('procurement.material-request*') ? 'active' : '' }}">
+            <svg class="w-5 h-5 flex-shrink-0 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+            <span x-show="sidebarOpen" class="ml-3 text-sm">Material Request</span>
+        </a>
+        <a href="{{ route('procurement.purchase-order') }}"
+           class="nav-item flex items-center px-3 py-2.5 rounded-lg mb-1 text-slate-200 hover:text-white transition-colors {{ request()->routeIs('procurement.purchase-order*') ? 'active' : '' }}">
+            <svg class="w-5 h-5 flex-shrink-0 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+            <span x-show="sidebarOpen" class="ml-3 text-sm">Purchase Order</span>
+        </a>
+
+        {{-- Aset IT Module --}}
+        <div x-show="sidebarOpen" class="px-2 py-1 text-xs font-semibold text-slate-400 uppercase tracking-wider mt-3 mb-1">Aset IT</div>
+        <a href="{{ route('aset-it.dashboard') }}"
+           class="nav-item flex items-center px-3 py-2.5 rounded-lg mb-1 text-slate-200 hover:text-white transition-colors {{ request()->routeIs('aset-it.dashboard') ? 'active' : '' }}">
+            <svg class="w-5 h-5 flex-shrink-0 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
+            <span x-show="sidebarOpen" class="ml-3 text-sm">Dashboard</span>
+        </a>
+        <a href="{{ route('aset-it.assets') }}"
+           class="nav-item flex items-center px-3 py-2.5 rounded-lg mb-1 text-slate-200 hover:text-white transition-colors {{ request()->routeIs('aset-it.assets*') ? 'active' : '' }}">
+            <svg class="w-5 h-5 flex-shrink-0 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            <span x-show="sidebarOpen" class="ml-3 text-sm">Daftar Aset IT</span>
+        </a>
+        <a href="{{ route('aset-it.assets.create') }}"
+           class="nav-item flex items-center px-3 py-2.5 rounded-lg mb-1 text-slate-200 hover:text-white transition-colors {{ request()->routeIs('aset-it.assets.create') ? 'active' : '' }}">
+            <svg class="w-5 h-5 flex-shrink-0 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <span x-show="sidebarOpen" class="ml-3 text-sm">Daftarkan Aset</span>
+        </a>
+
+        {{-- E-Approval Module --}}
+        <div x-show="sidebarOpen" class="px-2 py-1 text-xs font-semibold text-slate-400 uppercase tracking-wider mt-3 mb-1">E-Approval</div>
+        <a href="{{ route('e-approval.dashboard') }}"
+           class="nav-item flex items-center px-3 py-2.5 rounded-lg mb-1 text-slate-200 hover:text-white transition-colors {{ request()->routeIs('e-approval.dashboard') ? 'active' : '' }}">
+            <svg class="w-5 h-5 flex-shrink-0 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+            <span x-show="sidebarOpen" class="ml-3 text-sm">Dashboard</span>
+        </a>
+        <a href="{{ route('e-approval.documents') }}"
+           class="nav-item flex items-center px-3 py-2.5 rounded-lg mb-1 text-slate-200 hover:text-white transition-colors {{ request()->routeIs('e-approval.documents*') ? 'active' : '' }}">
+            <svg class="w-5 h-5 flex-shrink-0 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <span x-show="sidebarOpen" class="ml-3 text-sm">Dokumen Approval</span>
+        </a>
+        <a href="{{ route('e-approval.documents.create') }}"
+           class="nav-item flex items-center px-3 py-2.5 rounded-lg mb-1 text-slate-200 hover:text-white transition-colors {{ request()->routeIs('e-approval.documents.create') ? 'active' : '' }}">
+            <svg class="w-5 h-5 flex-shrink-0 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+            <span x-show="sidebarOpen" class="ml-3 text-sm">Ajukan Dokumen</span>
         </a>
 
         {{-- ERP System link (hanya ketika DEMO_MODE=false) --}}

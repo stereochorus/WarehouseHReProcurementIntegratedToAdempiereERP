@@ -7,6 +7,8 @@ use App\Http\Controllers\AdempiereController;
 use App\Http\Controllers\Warehouse\WarehouseController;
 use App\Http\Controllers\HR\HRController;
 use App\Http\Controllers\Procurement\ProcurementController;
+use App\Http\Controllers\AsetIT\AsetITController;
+use App\Http\Controllers\EApproval\EApprovalController;
 
 // Root redirect
 Route::get('/', fn() => redirect()->route('login'));
@@ -36,6 +38,10 @@ Route::middleware('demo.auth')->group(function () {
         Route::post('/issuing',         [WarehouseController::class, 'storeIssuing'])->name('issuing.store');
         Route::get('/stock-movement',   [WarehouseController::class, 'stockMovement'])->name('stock-movement');
         Route::get('/reports',          [WarehouseController::class, 'reports'])->name('reports');
+        Route::get('/surat-jalan',      [WarehouseController::class, 'suratJalan'])->name('surat-jalan');
+        Route::post('/surat-jalan',     [WarehouseController::class, 'storeSuratJalan'])->name('surat-jalan.store');
+        Route::get('/req-atk',          [WarehouseController::class, 'reqAtk'])->name('req-atk');
+        Route::post('/req-atk',         [WarehouseController::class, 'storeReqAtk'])->name('req-atk.store');
     });
 
     // HR Module
@@ -71,6 +77,21 @@ Route::middleware('demo.auth')->group(function () {
 
         // Laporan Cuti, Sakit & Lembur
         Route::get('/leave-reports',        [HRController::class, 'leaveReports'])->name('leave-reports');
+
+        // Form Izin
+        Route::get('/izin',               [HRController::class, 'formIzin'])->name('izin');
+        Route::post('/izin',              [HRController::class, 'storeIzin'])->name('izin.store');
+
+        // Pengajuan Dinas
+        Route::get('/pengajuan-dinas',    [HRController::class, 'pengajuanDinas'])->name('pengajuan-dinas');
+        Route::post('/pengajuan-dinas',   [HRController::class, 'storePengajuanDinas'])->name('pengajuan-dinas.store');
+
+        // Pengajuan SPJ
+        Route::get('/pengajuan-spj',      [HRController::class, 'pengajuanSpj'])->name('pengajuan-spj');
+        Route::post('/pengajuan-spj',     [HRController::class, 'storePengajuanSpj'])->name('pengajuan-spj.store');
+
+        // Laporan Tunjangan
+        Route::get('/tunjangan',          [HRController::class, 'tunjanganReport'])->name('tunjangan');
     });
 
     // eProcurement Module
@@ -82,6 +103,28 @@ Route::middleware('demo.auth')->group(function () {
         Route::get('/approvals',        [ProcurementController::class, 'approvals'])->name('approvals');
         Route::post('/approvals/{id}',  [ProcurementController::class, 'processApproval'])->name('approvals.process');
         Route::get('/reports',          [ProcurementController::class, 'reports'])->name('reports');
+        Route::get('/material-request',        [ProcurementController::class, 'materialRequest'])->name('material-request');
+        Route::post('/material-request',       [ProcurementController::class, 'storeMR'])->name('material-request.store');
+        Route::get('/purchase-order',          [ProcurementController::class, 'purchaseOrder'])->name('purchase-order');
+        Route::post('/purchase-order',         [ProcurementController::class, 'storePO'])->name('purchase-order.store');
+    });
+
+    // Aset Inventaris IT Module
+    Route::prefix('aset-it')->name('aset-it.')->group(function () {
+        Route::get('/dashboard',         [AsetITController::class, 'dashboard'])->name('dashboard');
+        Route::get('/assets',            [AsetITController::class, 'assets'])->name('assets');
+        Route::get('/assets/create',     [AsetITController::class, 'create'])->name('assets.create');
+        Route::post('/assets',           [AsetITController::class, 'store'])->name('assets.store');
+    });
+
+    // E-Approval Module
+    Route::prefix('e-approval')->name('e-approval.')->group(function () {
+        Route::get('/dashboard',              [EApprovalController::class, 'dashboard'])->name('dashboard');
+        Route::get('/documents',              [EApprovalController::class, 'documents'])->name('documents');
+        Route::get('/documents/create',       [EApprovalController::class, 'create'])->name('documents.create');
+        Route::post('/documents',             [EApprovalController::class, 'store'])->name('documents.store');
+        Route::post('/documents/{id}/approve',[EApprovalController::class, 'approve'])->name('documents.approve');
+        Route::post('/documents/{id}/reject', [EApprovalController::class, 'reject'])->name('documents.reject');
     });
 
 });

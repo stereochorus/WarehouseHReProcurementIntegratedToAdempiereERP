@@ -72,9 +72,33 @@ DB_SSLMODE=require
 
 ## Modul
 
-- **Warehouse**: Dashboard, Inventory, GR, GI, Mutasi Stok, Laporan
-- **HR**: Dashboard, Karyawan, Absensi, Payroll, Laporan HR, Pengajuan Cuti, Pengajuan Sakit, Pengajuan Lembur, Laporan Cuti/Sakit/Lembur
-- **eProcurement**: Dashboard, PR, Approval Workflow, Laporan
+### Warehouse
+- Dashboard, Inventory, Penerimaan Barang (GR), Pengeluaran Barang (GI), Mutasi Stok, Laporan Stok
+- **Surat Jalan** — Buat & kelola surat jalan pengiriman barang (form + tabel status)
+- **Req ATK** — Pengajuan kebutuhan Alat Tulis Kantor dari departemen (form + approval)
+
+### Human Resource (HR)
+- Dashboard, Data Karyawan, Absensi, Payroll, Laporan HR
+- Pengajuan Cuti, Pengajuan Sakit, Pengajuan Lembur, Laporan Cuti/Sakit/Lembur
+- **Form Izin** — Pengajuan izin tidak masuk, izin keluar, izin terlambat
+- **Pengajuan Dinas** — Perjalanan dinas luar kota dengan form & tracking status
+- **Pengajuan SPJ** — Surat Pertanggungjawaban biaya dinas (transport, hotel, makan) + grand total reimbursement
+- **Laporan Tunjangan Perbulan** — Rekap tunjangan per karyawan (transport, makan, jabatan) + take-home pay + chart
+
+### eProcurement
+- Dashboard, Purchase Request, Approval Workflow, Laporan Pengadaan
+- **Material Request (MR)** — Permintaan material dari departemen ke gudang
+- **Purchase Order (PO)** — Surat pesanan pembelian ke vendor/supplier
+
+### Aset Inventaris IT *(Modul baru)*
+- **Dashboard** — Statistik aset IT (total, aktif, maintenance, tidak aktif, total nilai), distribusi per kategori (doughnut chart)
+- **Daftar Aset IT** — Tabel inventaris lengkap dengan filter & search (nama, no. seri, lokasi, kategori, status)
+- **Daftarkan Aset** — Form input aset baru (nama, no. seri, merek, kategori, tahun beli, nilai, lokasi, PJ, kondisi, garansi)
+
+### E-Approval & Tanda Tangan Digital *(Modul baru)*
+- **Dashboard** — Statistik dokumen (total, menunggu, selesai, ditolak, ber-TTD digital), visualisasi alur approval, dokumen terbaru
+- **Dokumen Approval** — Daftar dokumen dengan filter status & jenis, accordion detail riwayat approval per step, aksi Setujui/Tolak
+- **Ajukan Dokumen** — Form pengajuan dokumen baru (judul, jenis, departemen, deadline, TTD digital checkbox, keterangan)
 
 ## Slip Gaji
 
@@ -106,7 +130,7 @@ Modul HR dilengkapi dengan fitur simulasi pengajuan dan persetujuan untuk:
 
 ## Teknologi
 
-- Laravel 12 · PHP 8.2 · PostgreSQL (Supabase)
+- Laravel 12 · PHP 8.4 · PostgreSQL (Supabase)
 - TailwindCSS CDN · Alpine.js CDN · Chart.js CDN
 
 ---

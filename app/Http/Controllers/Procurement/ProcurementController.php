@@ -194,4 +194,76 @@ class ProcurementController extends Controller
         }
         return view('procurement.reports', compact('prs'));
     }
+
+    // ─── MATERIAL REQUEST (MR) ─────────────────────────────────────
+    private function getDummyMR(): array
+    {
+        return [
+            ['no'=>'MR-2024-0025','tanggal'=>'24 Feb 2024','pemohon'=>'Budi Santoso','dept'=>'Warehouse','barang'=>'Pallet Kayu','jumlah'=>'50 unit','alasan'=>'Stok gudang habis','status'=>'Disetujui','prioritas'=>'Tinggi'],
+            ['no'=>'MR-2024-0024','tanggal'=>'23 Feb 2024','pemohon'=>'Ahmad Fauzi','dept'=>'IT','barang'=>'Kabel LAN Cat6','jumlah'=>'200 meter','alasan'=>'Perluasan jaringan ruang server','status'=>'Menunggu','prioritas'=>'Normal'],
+            ['no'=>'MR-2024-0023','tanggal'=>'22 Feb 2024','pemohon'=>'Gunawan Hadi','dept'=>'Operations','barang'=>'Helm Safety & Rompi K3','jumlah'=>'30 pcs','alasan'=>'Standar keselamatan baru','status'=>'Disetujui','prioritas'=>'Tinggi'],
+            ['no'=>'MR-2024-0022','tanggal'=>'21 Feb 2024','pemohon'=>'Siti Rahayu','dept'=>'HR','barang'=>'Formulir Rekrutmen (cetak)','jumlah'=>'500 lembar','alasan'=>'Rekrutmen batch Q1','status'=>'Ditolak','prioritas'=>'Rendah'],
+            ['no'=>'MR-2024-0021','tanggal'=>'20 Feb 2024','pemohon'=>'Dewi Kusuma','dept'=>'Finance','barang'=>'Brankas Arsip A4','jumlah'=>'2 unit','alasan'=>'Penyimpanan dokumen keuangan','status'=>'Disetujui','prioritas'=>'Normal'],
+        ];
+    }
+
+    public function materialRequest()
+    {
+        $mrs = $this->getDummyMR();
+        return view('procurement.material-request', compact('mrs'));
+    }
+
+    public function storeMR(Request $request)
+    {
+        $request->validate([
+            'pemohon'   => 'required|string',
+            'dept'      => 'required|string',
+            'barang'    => 'required|string',
+            'jumlah'    => 'required|string',
+            'alasan'    => 'required|string',
+            'prioritas' => 'required|in:Rendah,Normal,Tinggi',
+        ]);
+        $no = 'MR-' . date('Y') . '-' . str_pad(rand(26, 999), 4, '0', STR_PAD_LEFT);
+        return redirect()->route('procurement.material-request')
+            ->with('success', "Material Request berhasil dibuat! No. MR: {$no}. Status: Menunggu persetujuan Manager.");
+    }
+
+    // ─── PURCHASE ORDER (PO) ───────────────────────────────────────
+    private function getDummyPO(): array
+    {
+        return [
+            ['no'=>'PO-2024-0078','tanggal'=>'24 Feb 2024','vendor'=>'PT Mitra Teknologi','barang'=>'Server HPE ProLiant DL380','jumlah'=>'1 unit','harga_satuan'=>85000000,'total'=>85000000,'status'=>'Diterima','tgl_kirim'=>'28 Feb 2024'],
+            ['no'=>'PO-2024-0077','tanggal'=>'22 Feb 2024','vendor'=>'CV Kertas Jaya','barang'=>'Kertas A4 80gr','jumlah'=>'100 rim','harga_satuan'=>48000,'total'=>4800000,'status'=>'Dikirim','tgl_kirim'=>'25 Feb 2024'],
+            ['no'=>'PO-2024-0076','tanggal'=>'21 Feb 2024','vendor'=>'PT Aksesori Prima','barang'=>'Keyboard & Mouse Wireless Set','jumlah'=>'30 set','harga_satuan'=>650000,'total'=>19500000,'status'=>'Diproses','tgl_kirim'=>'01 Mar 2024'],
+            ['no'=>'PO-2024-0075','tanggal'=>'20 Feb 2024','vendor'=>'UD Furniture Mandiri','barang'=>'Kursi Ergonomis','jumlah'=>'10 unit','harga_satuan'=>1900000,'total'=>19000000,'status'=>'Draft','tgl_kirim'=>'-'],
+            ['no'=>'PO-2024-0074','tanggal'=>'19 Feb 2024','vendor'=>'PT Safety Indonesia','barang'=>'Helm Safety & Rompi K3','jumlah'=>'30 pcs','harga_satuan'=>185000,'total'=>5550000,'status'=>'Diterima','tgl_kirim'=>'22 Feb 2024'],
+        ];
+    }
+
+    private function getDummyVendors(): array
+    {
+        return ['PT Mitra Teknologi','CV Kertas Jaya','PT Aksesori Prima','UD Furniture Mandiri','PT Safety Indonesia','CV Sumber Makmur','PT Global Supplier','UD Bintang Jaya'];
+    }
+
+    public function purchaseOrder()
+    {
+        $pos     = $this->getDummyPO();
+        $vendors = $this->getDummyVendors();
+        return view('procurement.purchase-order', compact('pos', 'vendors'));
+    }
+
+    public function storePO(Request $request)
+    {
+        $request->validate([
+            'vendor'        => 'required|string',
+            'barang'        => 'required|string',
+            'jumlah'        => 'required|integer|min:1',
+            'harga_satuan'  => 'required|numeric|min:1',
+            'tgl_kirim'     => 'required|date',
+        ]);
+        $no    = 'PO-' . date('Y') . '-' . str_pad(rand(79, 999), 4, '0', STR_PAD_LEFT);
+        $total = number_format($request->jumlah * $request->harga_satuan, 0, ',', '.');
+        return redirect()->route('procurement.purchase-order')
+            ->with('success', "Purchase Order berhasil dibuat! No. PO: {$no}. Total: Rp {$total}. Status: Draft.");
+    }
 }

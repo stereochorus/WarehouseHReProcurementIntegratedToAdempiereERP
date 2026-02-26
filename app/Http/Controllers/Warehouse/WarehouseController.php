@@ -254,4 +254,71 @@ class WarehouseController extends Controller
         $lowStock = array_filter($inventory, fn($i) => $i['status'] === 'Low Stock');
         return view('warehouse.reports', compact('inventory', 'lowStock'));
     }
+
+    // ── Surat Jalan ────────────────────────────────────────────────────────────
+
+    private function getDummySuratJalan(): array
+    {
+        return [
+            ['no'=>'SJ-2024-0045','tanggal'=>'24 Feb 2024','karyawan'=>'Budi Santoso','barang'=>'Laptop Dell XPS 15 (2 unit)','tujuan'=>'Dept Marketing','catatan'=>'Pengiriman rutin','status'=>'Selesai'],
+            ['no'=>'SJ-2024-0044','tanggal'=>'23 Feb 2024','karyawan'=>'Ahmad Fauzi','barang'=>'Monitor LG 27" (5 unit)','tujuan'=>'Ruang Server','catatan'=>'Penggantian monitor lama','status'=>'Proses'],
+            ['no'=>'SJ-2024-0043','tanggal'=>'22 Feb 2024','karyawan'=>'Siti Rahayu','barang'=>'ATK Kantor (1 set)','tujuan'=>'Dept HR','catatan'=>'-','status'=>'Selesai'],
+            ['no'=>'SJ-2024-0042','tanggal'=>'21 Feb 2024','karyawan'=>'Eko Prasetyo','barang'=>'Kursi Ergonomis (3 unit)','tujuan'=>'Ruang Direksi','catatan'=>'Penggantian kursi lama','status'=>'Selesai'],
+            ['no'=>'SJ-2024-0041','tanggal'=>'20 Feb 2024','karyawan'=>'Gunawan Hadi','barang'=>'Barcode Scanner (2 unit)','tujuan'=>'Gudang 2','catatan'=>'Ekspansi gudang','status'=>'Dibatalkan'],
+        ];
+    }
+
+    public function suratJalan()
+    {
+        $suratJalan = $this->getDummySuratJalan();
+        return view('warehouse.surat-jalan', compact('suratJalan'));
+    }
+
+    public function storeSuratJalan(Request $request)
+    {
+        $request->validate([
+            'karyawan' => 'required|string',
+            'barang'   => 'required|string',
+            'tujuan'   => 'required|string',
+            'tanggal'  => 'required|date',
+        ]);
+
+        $no = 'SJ-' . date('Y') . '-' . str_pad(rand(46, 999), 4, '0', STR_PAD_LEFT);
+        return redirect()->route('warehouse.surat-jalan')
+            ->with('success', "Surat Jalan berhasil dibuat! No. Dokumen: {$no}.");
+    }
+
+    // ── Req ATK ────────────────────────────────────────────────────────────────
+
+    private function getDummyReqAtk(): array
+    {
+        return [
+            ['no'=>'ATK-2024-0033','tanggal'=>'24 Feb 2024','karyawan'=>'Siti Rahayu','dept'=>'HR','jenis_atk'=>'Kertas A4, Pulpen, Stapler','jumlah'=>'3 item','alasan'=>'Habis terpakai','status'=>'Disetujui'],
+            ['no'=>'ATK-2024-0032','tanggal'=>'23 Feb 2024','karyawan'=>'Dewi Kusuma','dept'=>'Finance','jenis_atk'=>'Tinta Printer, Map Ordner','jumlah'=>'5 pcs','alasan'=>'Kebutuhan bulanan','status'=>'Menunggu'],
+            ['no'=>'ATK-2024-0031','tanggal'=>'22 Feb 2024','karyawan'=>'Ahmad Fauzi','dept'=>'IT','jenis_atk'=>'Sticky Note, Whiteboard Marker','jumlah'=>'10 pcs','alasan'=>'Papan tulis baru dipasang','status'=>'Disetujui'],
+            ['no'=>'ATK-2024-0030','tanggal'=>'21 Feb 2024','karyawan'=>'Fitri Handayani','dept'=>'Marketing','jenis_atk'=>'Banner Stand, Brosur','jumlah'=>'2 unit','alasan'=>'Pameran produk','status'=>'Ditolak'],
+            ['no'=>'ATK-2024-0029','tanggal'=>'20 Feb 2024','karyawan'=>'Eko Prasetyo','dept'=>'Procurement','jenis_atk'=>'Amplop, Materai','jumlah'=>'50 pcs','alasan'=>'Pengiriman dokumen vendor','status'=>'Disetujui'],
+        ];
+    }
+
+    public function reqAtk()
+    {
+        $reqAtk = $this->getDummyReqAtk();
+        return view('warehouse.req-atk', compact('reqAtk'));
+    }
+
+    public function storeReqAtk(Request $request)
+    {
+        $request->validate([
+            'karyawan' => 'required|string',
+            'dept'     => 'required|string',
+            'jenis_atk'=> 'required|string',
+            'jumlah'   => 'required|string',
+            'alasan'   => 'required|string',
+        ]);
+
+        $no = 'ATK-' . date('Y') . '-' . str_pad(rand(34, 999), 4, '0', STR_PAD_LEFT);
+        return redirect()->route('warehouse.req-atk')
+            ->with('success', "Pengajuan Req ATK berhasil disubmit! No. Pengajuan: {$no}. Menunggu persetujuan atasan.");
+    }
 }
