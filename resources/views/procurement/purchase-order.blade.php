@@ -72,7 +72,7 @@
                         <td class="px-4 py-3 text-gray-600">{{ $po['tanggal'] }}</td>
                         <td class="px-4 py-3 font-medium text-gray-800">{{ $po['vendor'] }}</td>
                         <td class="px-4 py-3 text-gray-700">{{ $po['barang'] }}</td>
-                        <td class="px-4 py-3 text-right text-gray-600">{{ number_format($po['jumlah'], 0, ',', '.') }}</td>
+                        <td class="px-4 py-3 text-right text-gray-600">{{ number_format($po['jumlah'], 0, ',', '.') }} {{ $po['satuan'] ?? '' }}</td>
                         <td class="px-4 py-3 text-right text-gray-600">Rp {{ number_format($po['harga_satuan'], 0, ',', '.') }}</td>
                         <td class="px-4 py-3 text-right font-semibold text-gray-800">Rp {{ number_format($po['total'], 0, ',', '.') }}</td>
                         <td class="px-4 py-3 text-gray-600">{{ $po['tgl_kirim'] }}</td>

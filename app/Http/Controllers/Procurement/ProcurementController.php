@@ -232,11 +232,11 @@ class ProcurementController extends Controller
     private function getDummyPO(): array
     {
         return [
-            ['no'=>'PO-2024-0078','tanggal'=>'24 Feb 2024','vendor'=>'PT Mitra Teknologi','barang'=>'Server HPE ProLiant DL380','jumlah'=>'1 unit','harga_satuan'=>85000000,'total'=>85000000,'status'=>'Diterima','tgl_kirim'=>'28 Feb 2024'],
-            ['no'=>'PO-2024-0077','tanggal'=>'22 Feb 2024','vendor'=>'CV Kertas Jaya','barang'=>'Kertas A4 80gr','jumlah'=>'100 rim','harga_satuan'=>48000,'total'=>4800000,'status'=>'Dikirim','tgl_kirim'=>'25 Feb 2024'],
-            ['no'=>'PO-2024-0076','tanggal'=>'21 Feb 2024','vendor'=>'PT Aksesori Prima','barang'=>'Keyboard & Mouse Wireless Set','jumlah'=>'30 set','harga_satuan'=>650000,'total'=>19500000,'status'=>'Diproses','tgl_kirim'=>'01 Mar 2024'],
-            ['no'=>'PO-2024-0075','tanggal'=>'20 Feb 2024','vendor'=>'UD Furniture Mandiri','barang'=>'Kursi Ergonomis','jumlah'=>'10 unit','harga_satuan'=>1900000,'total'=>19000000,'status'=>'Draft','tgl_kirim'=>'-'],
-            ['no'=>'PO-2024-0074','tanggal'=>'19 Feb 2024','vendor'=>'PT Safety Indonesia','barang'=>'Helm Safety & Rompi K3','jumlah'=>'30 pcs','harga_satuan'=>185000,'total'=>5550000,'status'=>'Diterima','tgl_kirim'=>'22 Feb 2024'],
+            ['no'=>'PO-2024-0078','tanggal'=>'24 Feb 2024','vendor'=>'PT Mitra Teknologi','barang'=>'Server HPE ProLiant DL380','jumlah'=>1,'satuan'=>'unit','harga_satuan'=>85000000,'total'=>85000000,'status'=>'Diterima','tgl_kirim'=>'28 Feb 2024'],
+            ['no'=>'PO-2024-0077','tanggal'=>'22 Feb 2024','vendor'=>'CV Kertas Jaya','barang'=>'Kertas A4 80gr','jumlah'=>100,'satuan'=>'rim','harga_satuan'=>48000,'total'=>4800000,'status'=>'Dikirim','tgl_kirim'=>'25 Feb 2024'],
+            ['no'=>'PO-2024-0076','tanggal'=>'21 Feb 2024','vendor'=>'PT Aksesori Prima','barang'=>'Keyboard & Mouse Wireless Set','jumlah'=>30,'satuan'=>'set','harga_satuan'=>650000,'total'=>19500000,'status'=>'Diproses','tgl_kirim'=>'01 Mar 2024'],
+            ['no'=>'PO-2024-0075','tanggal'=>'20 Feb 2024','vendor'=>'UD Furniture Mandiri','barang'=>'Kursi Ergonomis','jumlah'=>10,'satuan'=>'unit','harga_satuan'=>1900000,'total'=>19000000,'status'=>'Draft','tgl_kirim'=>'-'],
+            ['no'=>'PO-2024-0074','tanggal'=>'19 Feb 2024','vendor'=>'PT Safety Indonesia','barang'=>'Helm Safety & Rompi K3','jumlah'=>30,'satuan'=>'pcs','harga_satuan'=>185000,'total'=>5550000,'status'=>'Diterima','tgl_kirim'=>'22 Feb 2024'],
         ];
     }
 
