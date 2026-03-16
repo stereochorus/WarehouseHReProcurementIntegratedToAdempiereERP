@@ -68,8 +68,8 @@ class EApprovalController extends Controller
 
     public function create()
     {
-        $jenises    = ['Proposal','Kontrak','Laporan','Surat Keputusan','Memo Internal','Surat Keterangan','Lainnya'];
-        $approvers  = ['Manager Departemen','Manager Keuangan','Legal','Direktur Keuangan','Direktur Utama'];
+        $jenises    = ['Proposal','Kontrak','Laporan','Surat Keputusan','Memo Internal','Surat Keterangan','Purchase Request','Material Request','Lainnya'];
+        $approvers  = ['Manager Departemen','Manager IT','Manager HR','Manager Finance','Manager Procurement','Manager Warehouse','PPIC','QC Manager','Site CM','Cost Control','Project Manager','Legal / Compliance','Direktur Keuangan','Direktur Utama'];
         return view('e-approval.create', compact('jenises', 'approvers'));
     }
 
@@ -105,5 +105,42 @@ class EApprovalController extends Controller
         ]);
         return redirect()->route('e-approval.documents')
             ->with('success', "Dokumen {$id} dikembalikan untuk revisi. Catatan: {$request->catatan}.");
+    }
+
+    public function workflow()
+    {
+        $workflows = [
+            ['id'=>'WF-2024-0031','judul'=>'Proposal Pengadaan Server 2024','pemohon'=>'Ahmad Fauzi','dept'=>'IT','tgl'=>'24 Feb 2024',
+             'steps'=>[
+                 ['urutan'=>1,'nama'=>'Manager IT','peran'=>'Approve','status'=>'Disetujui','tgl'=>'24 Feb 2024','catatan'=>'Kebutuhan mendesak','ttd'=>true],
+                 ['urutan'=>2,'nama'=>'Manajer Keuangan','peran'=>'Review','status'=>'Disetujui','tgl'=>'25 Feb 2024','catatan'=>'Anggaran tersedia','ttd'=>true],
+                 ['urutan'=>3,'nama'=>'Direktur Utama','peran'=>'Approve','status'=>'Menunggu','tgl'=>'-','catatan'=>'-','ttd'=>false],
+             ]],
+            ['id'=>'WF-2024-0030','judul'=>'Surat Perjanjian Vendor CV Kertas Jaya','pemohon'=>'Eko Prasetyo','dept'=>'Procurement','tgl'=>'23 Feb 2024',
+             'steps'=>[
+                 ['urutan'=>1,'nama'=>'Manager Procurement','peran'=>'Review','status'=>'Disetujui','tgl'=>'23 Feb 2024','catatan'=>'Sudah sesuai SOP','ttd'=>true],
+                 ['urutan'=>2,'nama'=>'Legal','peran'=>'Review','status'=>'Disetujui','tgl'=>'24 Feb 2024','catatan'=>'Klausul OK','ttd'=>true],
+                 ['urutan'=>3,'nama'=>'Direktur Utama','peran'=>'Approve','status'=>'Disetujui','tgl'=>'25 Feb 2024','catatan'=>'Setuju','ttd'=>true],
+             ]],
+            ['id'=>'WF-2024-0028','judul'=>'SK Kenaikan Gaji Karyawan 2024','pemohon'=>'Joko Widodo','dept'=>'HR','tgl'=>'21 Feb 2024',
+             'steps'=>[
+                 ['urutan'=>1,'nama'=>'HR Manager','peran'=>'Approve','status'=>'Disetujui','tgl'=>'21 Feb 2024','catatan'=>'Sesuai kebijakan','ttd'=>true],
+                 ['urutan'=>2,'nama'=>'Manager Keuangan','peran'=>'Review','status'=>'Disetujui','tgl'=>'22 Feb 2024','catatan'=>'Anggaran OK','ttd'=>true],
+                 ['urutan'=>3,'nama'=>'Direktur Utama','peran'=>'Approve','status'=>'Disetujui','tgl'=>'23 Feb 2024','catatan'=>'Approved','ttd'=>true],
+             ]],
+            ['id'=>'WF-2024-0027','judul'=>'Memo Perubahan SOP Gudang','pemohon'=>'Budi Santoso','dept'=>'Warehouse','tgl'=>'20 Feb 2024',
+             'steps'=>[
+                 ['urutan'=>1,'nama'=>'Supervisor Warehouse','peran'=>'Review','status'=>'Menunggu','tgl'=>'-','catatan'=>'-','ttd'=>false],
+                 ['urutan'=>2,'nama'=>'Manager Warehouse','peran'=>'Approve','status'=>'Menunggu','tgl'=>'-','catatan'=>'-','ttd'=>false],
+             ]],
+        ];
+
+        $users = [
+            'Manager IT','Manager HR','Manager Finance','Manager Procurement','Manager Warehouse',
+            'Supervisor Warehouse','HR Manager','Legal','Direktur Keuangan','Direktur Utama',
+            'PPIC','QC Manager','Site CM','Cost Control','Project Manager',
+        ];
+
+        return view('e-approval.workflow', compact('workflows', 'users'));
     }
 }

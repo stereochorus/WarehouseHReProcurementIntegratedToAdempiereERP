@@ -95,4 +95,61 @@ class AsetITController extends Controller
         return redirect()->route('aset-it.assets')
             ->with('success', "Aset IT berhasil didaftarkan! ID Aset: {$id} — {$request->nama}.");
     }
+
+    public function history(Request $request)
+    {
+        $history = [
+            ['id'=>'SVC-2024-0015','aset_id'=>'AST-IT-007','aset'=>'Laptop Lenovo ThinkPad E15','jenis'=>'Perbaikan','tanggal'=>'20 Feb 2024','teknisi'=>'Ahmad Fauzi','vendor'=>'Lenovo Service Center','biaya'=>1500000,'keterangan'=>'Ganti baterai & servis keyboard','status'=>'Selesai'],
+            ['id'=>'SVC-2024-0014','aset_id'=>'AST-IT-003','aset'=>'Switch Cisco Catalyst 24-Port','jenis'=>'Pemeliharaan','tanggal'=>'15 Feb 2024','teknisi'=>'Hana Pertiwi','vendor'=>'Internal IT','biaya'=>0,'keterangan'=>'Update firmware & pembersihan port','status'=>'Selesai'],
+            ['id'=>'SVC-2024-0013','aset_id'=>'AST-IT-008','aset'=>'CCTV IP Camera Hikvision','jenis'=>'Perbaikan','tanggal'=>'10 Feb 2024','teknisi'=>'Ahmad Fauzi','vendor'=>'CV Tekno Jaya','biaya'=>850000,'keterangan'=>'Kerusakan sensor — tidak dapat diperbaiki','status'=>'Tidak Dapat Diperbaiki'],
+            ['id'=>'SVC-2024-0012','aset_id'=>'AST-IT-004','aset'=>'UPS APC 1500VA','jenis'=>'Penggantian Baterai','tanggal'=>'05 Feb 2024','teknisi'=>'Ahmad Fauzi','vendor'=>'APC Authorized','biaya'=>2200000,'keterangan'=>'Baterai melemah, kapasitas turun ke 40%','status'=>'Selesai'],
+            ['id'=>'SVC-2024-0011','aset_id'=>'AST-IT-001','aset'=>'Laptop Dell XPS 15','jenis'=>'Pemeliharaan','tanggal'=>'01 Feb 2024','teknisi'=>'Ahmad Fauzi','vendor'=>'Internal IT','biaya'=>0,'keterangan'=>'Reinstall OS & update driver','status'=>'Selesai'],
+            ['id'=>'SVC-2024-0010','aset_id'=>'AST-IT-012','aset'=>'Proyektor Epson EB-X51','jenis'=>'Perbaikan','tanggal'=>'25 Jan 2024','teknisi'=>'Hana Pertiwi','vendor'=>'Epson Service','biaya'=>600000,'keterangan'=>'Ganti lampu proyektor','status'=>'Selesai'],
+            ['id'=>'SVC-2024-0009','aset_id'=>'AST-IT-002','aset'=>'Server HPE ProLiant DL380','jenis'=>'Pemeliharaan','tanggal'=>'20 Jan 2024','teknisi'=>'Ahmad Fauzi','vendor'=>'Internal IT','biaya'=>0,'keterangan'=>'Pengecekan rutin & backup konfigurasi','status'=>'Selesai'],
+            ['id'=>'SVC-2024-0008','aset_id'=>'AST-IT-007','aset'=>'Laptop Lenovo ThinkPad E15','jenis'=>'Perbaikan','tanggal'=>'10 Jan 2024','teknisi'=>'Hana Pertiwi','vendor'=>'Lenovo Service Center','biaya'=>750000,'keterangan'=>'Ganti thermal paste & bersihkan kipas','status'=>'Selesai'],
+        ];
+
+        if ($aset_id = $request->get('aset_id')) {
+            $history = array_filter($history, fn($h) => str_contains(strtolower($h['aset']), strtolower($aset_id)));
+        }
+        if ($jenis = $request->get('jenis')) {
+            $history = array_filter($history, fn($h) => $h['jenis'] === $jenis);
+        }
+
+        $asets  = array_unique(array_column($this->getDummyAssets(), 'nama'));
+        $jenises = ['Perbaikan', 'Pemeliharaan', 'Penggantian Baterai', 'Upgrade'];
+        $total_biaya = array_sum(array_column($history, 'biaya'));
+
+        return view('aset-it.history', compact('history', 'asets', 'jenises', 'total_biaya', 'aset_id', 'jenis'));
+    }
+
+    public function pengeluaran(Request $request)
+    {
+        $pengeluaran = [
+            ['id'=>'WRT-2024-0006','aset_id'=>'AST-IT-008','aset'=>'CCTV IP Camera Hikvision','kategori'=>'Keamanan','thn_beli'=>2021,'nilai_buku'=>0,'alasan'=>'Rusak total — tidak dapat diperbaiki','disetujui_oleh'=>'Ahmad Fauzi','tgl_pengeluaran'=>'15 Feb 2024','status'=>'Disetujui'],
+            ['id'=>'WRT-2024-0005','aset_id'=>'AST-IT-004B','aset'=>'UPS APC 600VA (Lama)','kategori'=>'Power','thn_beli'=>2018,'nilai_buku'=>0,'alasan'=>'Sudah melewati batas umur ekonomis (5 tahun)','disetujui_oleh'=>'Ahmad Fauzi','tgl_pengeluaran'=>'10 Feb 2024','status'=>'Disetujui'],
+            ['id'=>'WRT-2024-0004','aset_id'=>'AST-IT-013','aset'=>'Desktop PC Core i3 (Set 3 unit)','kategori'=>'Desktop','thn_beli'=>2017,'nilai_buku'=>0,'alasan'=>'Tidak mendukung kebutuhan software terkini','disetujui_oleh'=>'-','tgl_pengeluaran'=>'-','status'=>'Menunggu Persetujuan'],
+            ['id'=>'WRT-2023-0003','aset_id'=>'AST-IT-014','aset'=>'Router TP-Link WR940N','kategori'=>'Jaringan','thn_beli'=>2016,'nilai_buku'=>0,'alasan'=>'Digantikan dengan access point baru','disetujui_oleh'=>'Ahmad Fauzi','tgl_pengeluaran'=>'20 Des 2023','status'=>'Disetujui'],
+            ['id'=>'WRT-2023-0002','aset_id'=>'AST-IT-015','aset'=>'Printer Canon MP287','kategori'=>'Printer','thn_beli'=>2015,'nilai_buku'=>0,'alasan'=>'Rusak — suku cadang tidak tersedia','disetujui_oleh'=>'Ahmad Fauzi','tgl_pengeluaran'=>'05 Des 2023','status'=>'Disetujui'],
+        ];
+
+        $assets   = $this->getDummyAssets();
+        $kategoris = array_unique(array_column($assets, 'kategori'));
+        sort($kategoris);
+
+        return view('aset-it.pengeluaran', compact('pengeluaran', 'assets', 'kategoris'));
+    }
+
+    public function storePengeluaran(Request $request)
+    {
+        $request->validate([
+            'aset_id'  => 'required|string',
+            'alasan'   => 'required|string|min:10',
+            'kategori' => 'required|string',
+        ]);
+
+        $id = 'WRT-' . date('Y') . '-' . str_pad(rand(7, 999), 4, '0', STR_PAD_LEFT);
+        return redirect()->route('aset-it.pengeluaran')
+            ->with('success', "Pengajuan pengeluaran aset berhasil disubmit! No. Dokumen: {$id}. Menunggu persetujuan Manager IT.");
+    }
 }

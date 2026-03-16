@@ -19,23 +19,37 @@
             </div>
         </div>
 
-        <!-- Workflow Info -->
-        <div class="px-6 pt-4">
-            <div class="flex items-center gap-0">
-                @foreach(['Pemohon','Manager','Finance','Purchasing','Selesai'] as $i => $step)
-                <div class="flex items-center {{ $i < 4 ? 'flex-1' : '' }}">
-                    <div class="flex flex-col items-center">
-                        <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold
-                            {{ $i === 0 ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-500' }}">
-                            {{ $i + 1 }}
+        <!-- Workflow Info PR: PPIC → QC → WH Manager → SiteCM → CostControl → PM -->
+        <div class="px-6 pt-5">
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Alur Persetujuan PR</p>
+            <div class="overflow-x-auto pb-2">
+                <div class="flex items-start min-w-max gap-0">
+                    @php
+                        $prSteps = [
+                            ['label'=>'Pemohon',   'sub'=>'Pengaju',        'color'=>'bg-purple-600 text-white'],
+                            ['label'=>'PPIC',      'sub'=>'Approve',        'color'=>'bg-gray-200 text-gray-500'],
+                            ['label'=>'QC / QC Mgr','sub'=>'Review',       'color'=>'bg-gray-200 text-gray-500'],
+                            ['label'=>'WH Manager','sub'=>'Review',         'color'=>'bg-gray-200 text-gray-500'],
+                            ['label'=>'Site CM',   'sub'=>'Review',         'color'=>'bg-gray-200 text-gray-500'],
+                            ['label'=>'Cost Ctrl', 'sub'=>'Review',         'color'=>'bg-gray-200 text-gray-500'],
+                            ['label'=>'Project Mgr','sub'=>'Final Approve','color'=>'bg-gray-200 text-gray-500'],
+                        ];
+                    @endphp
+                    @foreach($prSteps as $i => $step)
+                    <div class="flex items-start">
+                        <div class="flex flex-col items-center">
+                            <div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold {{ $step['color'] }}">
+                                {{ $i + 1 }}
+                            </div>
+                            <span class="text-xs font-medium text-gray-700 mt-1 whitespace-nowrap">{{ $step['label'] }}</span>
+                            <span class="text-xs text-gray-400 whitespace-nowrap">{{ $step['sub'] }}</span>
                         </div>
-                        <span class="text-xs text-gray-500 mt-1 whitespace-nowrap">{{ $step }}</span>
+                        @if($i < count($prSteps)-1)
+                        <div class="h-0.5 w-6 sm:w-10 bg-gray-200 mt-4 mx-0.5"></div>
+                        @endif
                     </div>
-                    @if($i < 4)
-                    <div class="flex-1 h-0.5 bg-gray-200 mx-1 mb-4"></div>
-                    @endif
+                    @endforeach
                 </div>
-                @endforeach
             </div>
         </div>
 

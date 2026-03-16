@@ -179,7 +179,7 @@ class WarehouseController extends Controller
 
     public function issuing()
     {
-        $departments = ['IT', 'HR', 'Finance', 'Marketing', 'Operations', 'Procurement', 'Direksi'];
+        $departments = ['IT', 'HR', 'Finance', 'Marketing', 'Operations', 'Procurement', 'Warehouse', 'PPIC', 'QC', 'Direksi'];
 
         if ($this->isDemo()) {
             $items = array_column($this->getDummyInventory(), 'name', 'id');

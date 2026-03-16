@@ -113,6 +113,27 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
+        {{-- MR Approval Flow --}}
+        <div class="px-6 py-3 bg-purple-50 border-b border-purple-100">
+            <p class="text-xs font-semibold text-purple-700 uppercase tracking-wider mb-2">Alur Review & Approval MR</p>
+            <div class="flex items-center gap-1">
+                @foreach([['Pemohon','Pengaju'],['Manager Dept','Review'],['PPIC','Approve'],['Gudang','Proses']] as $i => $s)
+                <div class="flex items-center">
+                    <div class="flex flex-col items-center">
+                        <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold
+                            {{ $i === 0 ? 'bg-purple-600 text-white' : 'bg-white border-2 border-purple-300 text-purple-500' }}">
+                            {{ $i + 1 }}
+                        </div>
+                        <span class="text-xs font-medium text-purple-800 mt-0.5 whitespace-nowrap">{{ $s[0] }}</span>
+                        <span class="text-xs text-purple-500 whitespace-nowrap">{{ $s[1] }}</span>
+                    </div>
+                    @if($i < 3)
+                    <div class="w-6 h-0.5 bg-purple-200 mx-0.5 mb-5"></div>
+                    @endif
+                </div>
+                @endforeach
+            </div>
+        </div>
         <form method="POST" action="{{ route('procurement.material-request.store') }}" class="p-6 space-y-4">
             @csrf
             <div class="grid grid-cols-2 gap-4">

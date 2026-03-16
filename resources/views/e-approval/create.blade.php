@@ -68,6 +68,40 @@
                     </div>
                 </div>
 
+                {{-- Signer / Reviewer Selection --}}
+                <div x-data="{ steps: [{ user: '', peran: 'Approve' }] }">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Pilih Approver & Reviewer <span class="text-red-500">*</span></label>
+                    <p class="text-xs text-gray-400 mb-2">Tentukan siapa yang <strong>Tanda Tangan (Approve)</strong> dan siapa yang hanya <strong>Review</strong>.</p>
+                    <div class="space-y-2">
+                        <template x-for="(step, idx) in steps" :key="idx">
+                            <div class="flex items-center gap-2 p-2.5 bg-gray-50 rounded-lg border border-gray-200">
+                                <span class="w-6 h-6 bg-teal-600 text-white text-xs rounded-full flex items-center justify-center font-bold flex-shrink-0" x-text="idx+1"></span>
+                                <select x-model="step.user" :name="'step_user[]'" required
+                                        class="flex-1 border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:ring-2 focus:ring-teal-500">
+                                    <option value="">-- Pilih Jabatan / User --</option>
+                                    @foreach($approvers as $a)
+                                    <option value="{{ $a }}">{{ $a }}</option>
+                                    @endforeach
+                                </select>
+                                <select x-model="step.peran" :name="'step_peran[]'"
+                                        class="border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:ring-2 focus:ring-teal-500">
+                                    <option value="Approve">Tanda Tangan</option>
+                                    <option value="Review">Review Only</option>
+                                </select>
+                                <button type="button" @click="steps.splice(idx,1)" x-show="steps.length > 1"
+                                        class="text-red-400 hover:text-red-600 flex-shrink-0">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                            </div>
+                        </template>
+                        <button type="button" @click="steps.push({ user: '', peran: 'Approve' })"
+                                class="flex items-center gap-1 text-xs text-teal-600 hover:text-teal-800 font-medium">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                            Tambah Step Approval
+                        </button>
+                    </div>
+                </div>
+
                 <div class="flex items-center gap-3 p-3 bg-teal-50 border border-teal-200 rounded-lg">
                     <input type="checkbox" name="ttd_digital" id="ttd_digital" value="1" {{ old('ttd_digital') ? 'checked' : '' }}
                            class="w-4 h-4 text-teal-600 rounded border-gray-300 focus:ring-teal-500">
@@ -79,7 +113,7 @@
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Keterangan / Latar Belakang</label>
-                    <textarea name="keterangan" rows="4" placeholder="Jelaskan isi dokumen, urgensi, dan informasi relevan lainnya..."
+                    <textarea name="keterangan" rows="3" placeholder="Jelaskan isi dokumen, urgensi, dan informasi relevan lainnya..."
                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500">{{ old('keterangan') }}</textarea>
                 </div>
 
@@ -87,7 +121,7 @@
                     <a href="{{ route('e-approval.documents') }}"
                        class="px-6 py-2 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50 transition-colors">Batal</a>
                     <button type="submit"
-                            class="px-6 py-2 bg-teal-600 text-white text-sm font-medium rounded-lg hover:bg-teal-700 transition-colors">Ajukan untuk Approval</button>
+                            class="px-6 py-2 bg-teal-600 text-white text-sm font-medium rounded-lg hover:bg-teal-700 transition-colors">Upload & Ajukan Approval</button>
                 </div>
             </form>
         </div>

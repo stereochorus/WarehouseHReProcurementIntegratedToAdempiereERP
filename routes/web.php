@@ -115,6 +115,9 @@ Route::middleware('demo.auth')->group(function () {
         Route::get('/assets',            [AsetITController::class, 'assets'])->name('assets');
         Route::get('/assets/create',     [AsetITController::class, 'create'])->name('assets.create');
         Route::post('/assets',           [AsetITController::class, 'store'])->name('assets.store');
+        Route::get('/history',           [AsetITController::class, 'history'])->name('history');
+        Route::get('/pengeluaran',       [AsetITController::class, 'pengeluaran'])->name('pengeluaran');
+        Route::post('/pengeluaran',      [AsetITController::class, 'storePengeluaran'])->name('pengeluaran.store');
     });
 
     // E-Approval Module
@@ -125,6 +128,7 @@ Route::middleware('demo.auth')->group(function () {
         Route::post('/documents',             [EApprovalController::class, 'store'])->name('documents.store');
         Route::post('/documents/{id}/approve',[EApprovalController::class, 'approve'])->name('documents.approve');
         Route::post('/documents/{id}/reject', [EApprovalController::class, 'reject'])->name('documents.reject');
+        Route::get('/workflow',               [EApprovalController::class, 'workflow'])->name('workflow');
     });
 
 });

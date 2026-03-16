@@ -70,35 +70,150 @@ DB_PASSWORD=your-password
 DB_SSLMODE=require
 ```
 
-## Modul
+## Modul & Menu Navigasi
+
+> ⚠ Semua data adalah **dummy/hardcoded**. Alur menu dan form sudah dapat disimulasikan sepenuhnya.
 
 ### Warehouse
-- Dashboard, Inventory, Penerimaan Barang (GR), Pengeluaran Barang (GI), Mutasi Stok, Laporan Stok
-- **Surat Jalan** — Buat & kelola surat jalan pengiriman barang (form + tabel status)
-- **Req ATK** — Pengajuan kebutuhan Alat Tulis Kantor dari departemen (form + approval)
+| Menu | Deskripsi |
+|---|---|
+| Dashboard | Statistik stok, penerimaan, pengeluaran hari ini |
+| Inventory | Tabel inventaris dengan filter kategori & status |
+| Penerimaan Barang | Form Good Receipt (GR) — simulasi penerimaan dari vendor |
+| **Pengeluaran Barang** | Form Good Issue (GI) — Nomor Dokumen auto-generate, Departemen Penerima (termasuk Warehouse), Status |
+| Mutasi Stok | Log perpindahan barang antar lokasi/gudang |
+| Laporan Stok | Ringkasan stok per kategori |
+| **Surat Jalan** | Buat & kelola surat jalan pengiriman — relasi ke Nomor PO |
+| **Req ATK** | Pengajuan kebutuhan Alat Tulis Kantor dari departemen |
 
-### Human Resource (HR)
-- Dashboard, Data Karyawan, Absensi, Payroll, Laporan HR
-- Pengajuan Cuti, Pengajuan Sakit, Pengajuan Lembur, Laporan Cuti/Sakit/Lembur
-- **Form Izin** — Pengajuan izin tidak masuk, izin keluar, izin terlambat
-- **Pengajuan Dinas** — Perjalanan dinas luar kota dengan form & tracking status
-- **Pengajuan SPJ** — Surat Pertanggungjawaban biaya dinas (transport, hotel, makan) + grand total reimbursement
-- **Laporan Tunjangan Perbulan** — Rekap tunjangan per karyawan (transport, makan, jabatan) + take-home pay + chart
+### Human Resource (HRD)
+| Menu | Deskripsi |
+|---|---|
+| Dashboard | KPI karyawan, chart absensi, rekap pengajuan |
+| Data Karyawan | Tabel data karyawan + form tambah/edit |
+| Absensi | Catat & lihat absensi harian |
+| Payroll | Perhitungan gaji + cetak slip gaji per karyawan |
+| Laporan HR | Laporan umum HRD |
+| Pengajuan Cuti | Form + daftar cuti; alur: Staff → Manager → HR |
+| **Pengajuan Sakit** | Form sakit + upload surat sakit (simulasi); alur: Staff → HR |
+| Pengajuan Lembur | Form + estimasi upah lembur |
+| Laporan Cuti/Sakit/Lembur | Laporan terpadu 3 tab dengan grafik |
+| **Form Izin** | Izin tidak masuk, izin keluar, izin terlambat |
+| **Pengajuan Dinas** | Perjalanan dinas — Kota/Lokasi dari Kode Proyek, tracking status |
+| **Pengajuan SPJ** | Surat Perjalanan Dinas: transport, hotel, makan; grand total reimbursement |
+| **Laporan Tunjangan** | Rekap tunjangan per karyawan + take-home pay + chart |
 
 ### eProcurement
-- Dashboard, Purchase Request, Approval Workflow, Laporan Pengadaan
-- **Material Request (MR)** — Permintaan material dari departemen ke gudang
-- **Purchase Order (PO)** — Surat pesanan pembelian ke vendor/supplier
+| Menu | Deskripsi |
+|---|---|
+| Dashboard | Statistik PR, MR, PO |
+| **Material Request (MR)** | Form MR → alur: Pemohon → Manager Dept (Review) → PPIC (Approve) → Gudang (Proses) |
+| Purchase Request (PR) | Form PR — alur lengkap: Pemohon → PPIC → QC/QC Mgr → WH Manager → Site CM → Cost Control → Project Manager (Final Approve) + progress tracker |
+| Approval | Daftar PR menunggu persetujuan |
+| **Purchase Order (PO)** | Data PO dari PR yang sudah disetujui |
+| Laporan Pengadaan | Ringkasan pengadaan |
 
-### Aset Inventaris IT *(Modul baru)*
-- **Dashboard** — Statistik aset IT (total, aktif, maintenance, tidak aktif, total nilai), distribusi per kategori (doughnut chart)
-- **Daftar Aset IT** — Tabel inventaris lengkap dengan filter & search (nama, no. seri, lokasi, kategori, status)
-- **Daftarkan Aset** — Form input aset baru (nama, no. seri, merek, kategori, tahun beli, nilai, lokasi, PJ, kondisi, garansi)
+### Aset IT
+| Menu | Deskripsi |
+|---|---|
+| Dashboard | Statistik aset (total, aktif, maintenance, tidak aktif, total nilai) + chart per kategori |
+| Daftar Aset IT | Inventaris aset IT dengan filter search |
+| Daftarkan Aset | Form input aset baru |
+| **History Aset** | Riwayat service & pemeliharaan aset (jenis, teknisi, vendor, biaya, status) |
+| **Pengeluaran Aset** | Daftar aset write-off + form pengajuan pengeluaran aset tidak terpakai |
 
-### E-Approval & Tanda Tangan Digital *(Modul baru)*
-- **Dashboard** — Statistik dokumen (total, menunggu, selesai, ditolak, ber-TTD digital), visualisasi alur approval, dokumen terbaru
-- **Dokumen Approval** — Daftar dokumen dengan filter status & jenis, accordion detail riwayat approval per step, aksi Setujui/Tolak
-- **Ajukan Dokumen** — Form pengajuan dokumen baru (judul, jenis, departemen, deadline, TTD digital checkbox, keterangan)
+### E-Approval
+| Menu | Deskripsi |
+|---|---|
+| Dashboard | Statistik dokumen + dokumen terbaru |
+| Dokumen Approval | Daftar dokumen, filter status & jenis, riwayat approval per step, aksi Setujui/Tolak |
+| **Upload Dokumen** | Form upload dokumen + pilih Approver & Reviewer per step (Tanda Tangan / Review Only) |
+| **Workflow Approval** | Visualisasi alur approval lengkap per dokumen — siapa TTD, siapa review, status e-TTD digital simulasi |
+
+---
+
+## Relasi Antar Form
+
+```
+MR (Material Request)
+  └─ diajukan oleh pemohon
+  └─ direview Manager Dept → disetujui PPIC → diproses Gudang
+
+PR (Purchase Request)
+  └─ bisa dibuat dari MR yang sudah disetujui
+  └─ alur: Pemohon → PPIC → QC/QC Mgr → WH Manager → Site CM → Cost Control → Project Manager
+
+PO (Purchase Order)
+  └─ dibuat dari PR yang sudah Final Approve
+
+Surat Jalan
+  └─ relasi ke Nomor PO — data surat jalan ditarik berdasarkan PO
+
+SPJ (Surat Perjalanan Dinas)
+  └─ relasi ke Kode Proyek → menentukan Kota/Lokasi tujuan dinas
+  └─ pemohon mengisi biaya transport, hotel, makan → sistem hitung grand total
+```
+
+---
+
+## Alur Approval Detail
+
+### Material Request (MR)
+```
+[Pemohon] → [Manager Dept: Review] → [PPIC: Approve] → [Gudang: Proses]
+```
+
+### Purchase Request (PR)
+```
+[Pemohon] → [PPIC: Approve] → [QC / QC Mgr: Review] → [WH Manager: Review]
+          → [Site CM: Review] → [Cost Control: Review] → [Project Manager: Final Approve]
+```
+
+### E-Approval (Konfigurasi Bebas)
+- User memilih sendiri siapa yang **Tanda Tangan (Approve)** dan siapa yang **Review Only**
+- Bisa menambah/mengurangi step secara dinamis
+- Simulasi tanda tangan digital (e-TTD) per step yang disetujui
+
+---
+
+## Cara Menambahkan Data Dummy Baru
+
+Semua data dummy berada di method private dalam masing-masing Controller:
+
+| Controller | Method | Keterangan |
+|---|---|---|
+| `WarehouseController` | `getDummyInventory()` | Data item inventaris |
+| `WarehouseController` | `getDummyMovements()` | Data mutasi stok |
+| `HRController` | `getDummyEmployees()` | Data karyawan |
+| `HRController` | `getDummyAttendance()` | Data absensi |
+| `ProcurementController` | `getDummyPRs()` | Data Purchase Request |
+| `AsetITController` | `getDummyAssets()` | Data aset IT |
+| `EApprovalController` | `getDummyDocuments()` | Data dokumen approval |
+
+**Cara menambah data:** Cukup tambahkan array baru ke dalam method `getDummyXxx()` di controller yang bersangkutan. Format mengikuti array yang sudah ada.
+
+---
+
+## Struktur Modul (File Penting)
+
+```
+app/Http/Controllers/
+  Warehouse/WarehouseController.php
+  HR/HRController.php
+  Procurement/ProcurementController.php
+  AsetIT/AsetITController.php
+  EApproval/EApprovalController.php
+
+resources/views/
+  warehouse/      — issuing, receiving, surat-jalan, req-atk, ...
+  hr/             — employees, attendance, sick-leaves, pengajuan-dinas, pengajuan-spj, tunjangan, ...
+  procurement/    — material-request, pr-form, purchase-requests, purchase-order, ...
+  aset-it/        — assets, history, pengeluaran, ...
+  e-approval/     — documents, create (upload), workflow, ...
+  layouts/app.blade.php  — sidebar navigasi utama
+
+routes/web.php    — semua route terdaftar di sini
+```
 
 ## Slip Gaji
 
@@ -115,18 +230,20 @@ Modul Payroll dilengkapi dengan fitur **cetak slip gaji** per karyawan:
 
 > Data slip gaji masih dummy/hardcoded, tetapi layout sudah siap untuk demo presentasi.
 
-## Modul HR — Detail Fitur Tambahan
-
-Modul HR dilengkapi dengan fitur simulasi pengajuan dan persetujuan untuk:
+## Modul HR — Detail Fitur
 
 | Fitur | Deskripsi | Workflow Approval |
 |---|---|---|
 | **Pengajuan Cuti** | Form & daftar pengajuan cuti karyawan | Staff → Manager → HR |
-| **Pengajuan Sakit** | Pencatatan ketidakhadiran sakit + keterangan medis | Staff/HR → Verifikasi HR |
-| **Pengajuan Lembur** | Form & daftar pengajuan lembur + estimasi upah | Staff → Manager → HR (Payroll) |
-| **Laporan Cuti/Sakit/Lembur** | Laporan terpadu dengan grafik & tabel detail (3 tab) | — |
+| **Pengajuan Sakit** | Form sakit + upload surat sakit (simulasi) | Staff/HR → Verifikasi HR |
+| **Pengajuan Lembur** | Form & daftar lembur + estimasi upah | Staff → Manager → HR (Payroll) |
+| **Form Izin** | Izin tidak masuk, izin keluar, izin terlambat | Staff → Atasan → HR |
+| **Pengajuan Dinas** | Dinas luar kota, Kota dari Kode Proyek | Staff → Manager → HR |
+| **Pengajuan SPJ** | Reimbursement biaya dinas (transport, hotel, makan) | Staff → Manager → Finance |
+| **Laporan Tunjangan** | Rekap tunjangan bulanan per karyawan | — |
+| **Laporan Cuti/Sakit/Lembur** | Laporan terpadu 3 tab dengan grafik | — |
 
-> Semua modul HR tambahan ini masih berbasis simulasi UI/UX dengan data dummy. Belum ada integrasi real dengan sistem absensi atau Adempiere ERP.
+> Semua modul HR berbasis simulasi UI/UX dengan data dummy. Belum ada integrasi real dengan sistem absensi atau Adempiere ERP.
 
 ## Teknologi
 

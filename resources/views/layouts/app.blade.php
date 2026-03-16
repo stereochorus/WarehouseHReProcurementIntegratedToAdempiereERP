@@ -259,6 +259,16 @@
             <svg class="w-5 h-5 flex-shrink-0 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             <span x-show="sidebarOpen || mobileSidebarOpen" class="ml-3 text-sm">Daftarkan Aset</span>
         </a>
+        <a href="{{ route('aset-it.history') }}"
+           class="nav-item flex items-center px-3 py-2.5 rounded-lg mb-1 text-slate-200 hover:text-white transition-colors {{ request()->routeIs('aset-it.history') ? 'active' : '' }}">
+            <svg class="w-5 h-5 flex-shrink-0 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span x-show="sidebarOpen || mobileSidebarOpen" class="ml-3 text-sm">History Aset</span>
+        </a>
+        <a href="{{ route('aset-it.pengeluaran') }}"
+           class="nav-item flex items-center px-3 py-2.5 rounded-lg mb-1 text-slate-200 hover:text-white transition-colors {{ request()->routeIs('aset-it.pengeluaran*') ? 'active' : '' }}">
+            <svg class="w-5 h-5 flex-shrink-0 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            <span x-show="sidebarOpen || mobileSidebarOpen" class="ml-3 text-sm">Pengeluaran Aset</span>
+        </a>
 
         {{-- E-Approval Module --}}
         <div x-show="sidebarOpen || mobileSidebarOpen" class="px-2 py-1 text-xs font-semibold text-slate-400 uppercase tracking-wider mt-3 mb-1">E-Approval</div>
@@ -268,14 +278,19 @@
             <span x-show="sidebarOpen || mobileSidebarOpen" class="ml-3 text-sm">Dashboard</span>
         </a>
         <a href="{{ route('e-approval.documents') }}"
-           class="nav-item flex items-center px-3 py-2.5 rounded-lg mb-1 text-slate-200 hover:text-white transition-colors {{ request()->routeIs('e-approval.documents*') ? 'active' : '' }}">
+           class="nav-item flex items-center px-3 py-2.5 rounded-lg mb-1 text-slate-200 hover:text-white transition-colors {{ request()->routeIs('e-approval.documents') ? 'active' : '' }}">
             <svg class="w-5 h-5 flex-shrink-0 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
             <span x-show="sidebarOpen || mobileSidebarOpen" class="ml-3 text-sm">Dokumen Approval</span>
         </a>
         <a href="{{ route('e-approval.documents.create') }}"
            class="nav-item flex items-center px-3 py-2.5 rounded-lg mb-1 text-slate-200 hover:text-white transition-colors {{ request()->routeIs('e-approval.documents.create') ? 'active' : '' }}">
-            <svg class="w-5 h-5 flex-shrink-0 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-            <span x-show="sidebarOpen || mobileSidebarOpen" class="ml-3 text-sm">Ajukan Dokumen</span>
+            <svg class="w-5 h-5 flex-shrink-0 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+            <span x-show="sidebarOpen || mobileSidebarOpen" class="ml-3 text-sm">Upload Dokumen</span>
+        </a>
+        <a href="{{ route('e-approval.workflow') }}"
+           class="nav-item flex items-center px-3 py-2.5 rounded-lg mb-1 text-slate-200 hover:text-white transition-colors {{ request()->routeIs('e-approval.workflow') ? 'active' : '' }}">
+            <svg class="w-5 h-5 flex-shrink-0 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/></svg>
+            <span x-show="sidebarOpen || mobileSidebarOpen" class="ml-3 text-sm">Workflow Approval</span>
         </a>
 
         {{-- ERP System link (hanya ketika DEMO_MODE=false) --}}
