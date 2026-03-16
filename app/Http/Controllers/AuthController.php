@@ -16,7 +16,9 @@ class AuthController extends Controller
     public function showLogin()
     {
         if (Session::has('demo_user')) {
-            return redirect()->route('dashboard');
+            return Session::get('demo_user.role') === 'admin'
+                ? redirect()->route('admin.users.index')
+                : redirect()->route('dashboard');
         }
         return view('auth.login');
     }
@@ -38,8 +40,15 @@ class AuthController extends Controller
             Session::put('demo_user', $user);
             Session::put('demo_login_time', now()->format('d M Y H:i'));
 
+            $welcomeMsg = 'Selamat datang, ' . $user['name'] . '! Login sebagai ' . strtoupper($user['role']) . '.';
+
+            if ($user['role'] === 'admin') {
+                return redirect()->route('admin.users.index')
+                    ->with('success', $welcomeMsg . ' Anda masuk ke portal Admin.');
+            }
+
             return redirect()->route('dashboard')
-                ->with('success', 'Selamat datang, ' . $user['name'] . '! Login sebagai ' . strtoupper($user['role']) . '.');
+                ->with('success', $welcomeMsg);
         }
 
         return back()

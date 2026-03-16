@@ -9,6 +9,7 @@ use App\Http\Controllers\HR\HRController;
 use App\Http\Controllers\Procurement\ProcurementController;
 use App\Http\Controllers\AsetIT\AsetITController;
 use App\Http\Controllers\EApproval\EApprovalController;
+use App\Http\Controllers\Admin\UserManagerController;
 
 // Root redirect
 Route::get('/', fn() => redirect()->route('login'));
@@ -23,6 +24,16 @@ Route::middleware('demo.auth')->group(function () {
 
     // Main Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Admin — User Manager (admin only)
+    Route::middleware('admin.only')->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/users',                        [UserManagerController::class, 'index'])->name('users.index');
+        Route::get('/users/create',                 [UserManagerController::class, 'create'])->name('users.create');
+        Route::post('/users',                       [UserManagerController::class, 'store'])->name('users.store');
+        Route::post('/users/{id}/toggle',           [UserManagerController::class, 'toggle'])->name('users.toggle');
+        Route::get('/users/{id}/permissions',       [UserManagerController::class, 'permissions'])->name('users.permissions');
+        Route::post('/users/{id}/permissions',      [UserManagerController::class, 'savePermissions'])->name('users.permissions.save');
+    });
 
     // Adempiere ERP Status & Diagnostics
     Route::get('/adempiere/status',       [AdempiereController::class, 'status'])->name('adempiere.status');

@@ -14,7 +14,8 @@ return Application::configure(basePath: dirname(__DIR__))
         // Trust Azure App Service reverse proxy / load balancer
         $middleware->trustProxies(at: '*');
         $middleware->alias([
-            'demo.auth' => \App\Http\Middleware\DemoAuth::class,
+            'demo.auth'  => \App\Http\Middleware\DemoAuth::class,
+            'admin.only' => \App\Http\Middleware\AdminOnly::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

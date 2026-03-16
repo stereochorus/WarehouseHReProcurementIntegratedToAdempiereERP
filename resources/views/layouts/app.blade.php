@@ -98,6 +98,26 @@
             <span x-show="sidebarOpen || mobileSidebarOpen" class="ml-3 text-sm font-medium">Dashboard</span>
         </a>
 
+        @if(session('demo_user.role') === 'admin')
+        {{-- Admin: User Manager only --}}
+        <div x-show="sidebarOpen || mobileSidebarOpen" class="px-2 py-1 text-xs font-semibold text-slate-400 uppercase tracking-wider mt-3 mb-1">Admin Panel</div>
+        <a href="{{ route('admin.users.index') }}"
+           class="nav-item flex items-center px-3 py-2.5 rounded-lg mb-1 text-slate-200 hover:text-white transition-colors {{ request()->routeIs('admin.users.index') ? 'active' : '' }}">
+            <svg class="w-5 h-5 flex-shrink-0 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+            <span x-show="sidebarOpen || mobileSidebarOpen" class="ml-3 text-sm font-medium">User Manager</span>
+        </a>
+        <a href="{{ route('admin.users.create') }}"
+           class="nav-item flex items-center px-3 py-2.5 rounded-lg mb-1 text-slate-200 hover:text-white transition-colors {{ request()->routeIs('admin.users.create') ? 'active' : '' }}">
+            <svg class="w-5 h-5 flex-shrink-0 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+            <span x-show="sidebarOpen || mobileSidebarOpen" class="ml-3 text-sm">Tambah User</span>
+        </a>
+        <div x-show="sidebarOpen || mobileSidebarOpen" class="px-2 py-1 text-xs font-semibold text-slate-400 uppercase tracking-wider mt-3 mb-1">System</div>
+        <a href="{{ route('adempiere.status') }}"
+           class="nav-item flex items-center px-3 py-2.5 rounded-lg mb-1 text-slate-200 hover:text-white transition-colors {{ request()->routeIs('adempiere.*') ? 'active' : '' }}">
+            <svg class="w-5 h-5 flex-shrink-0 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
+            <span x-show="sidebarOpen || mobileSidebarOpen" class="ml-3 text-sm">Status ERP</span>
+        </a>
+        @else
         <!-- Warehouse Module -->
         <div x-show="sidebarOpen || mobileSidebarOpen" class="px-2 py-1 text-xs font-semibold text-slate-400 uppercase tracking-wider mt-3 mb-1">Warehouse</div>
         <a href="{{ route('warehouse.dashboard') }}"
@@ -293,17 +313,7 @@
             <span x-show="sidebarOpen || mobileSidebarOpen" class="ml-3 text-sm">Workflow Approval</span>
         </a>
 
-        {{-- ERP System link (hanya ketika DEMO_MODE=false) --}}
-        @if(env('DEMO_MODE', 'true') !== 'true')
-        <div x-show="sidebarOpen || mobileSidebarOpen" class="px-2 py-1 text-xs font-semibold text-slate-400 uppercase tracking-wider mt-3 mb-1">System</div>
-        <a href="{{ route('adempiere.status') }}"
-           class="nav-item flex items-center px-3 py-2.5 rounded-lg mb-1 text-slate-200 hover:text-white transition-colors {{ request()->routeIs('adempiere.*') ? 'active' : '' }}">
-            <svg class="w-5 h-5 flex-shrink-0 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/>
-            </svg>
-            <span x-show="sidebarOpen || mobileSidebarOpen" class="ml-3 text-sm">Status ERP</span>
-        </a>
-        @endif
+        @endif {{-- end admin/non-admin --}}
 
     </nav>
 

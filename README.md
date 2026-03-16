@@ -70,6 +70,38 @@ DB_PASSWORD=your-password
 DB_SSLMODE=require
 ```
 
+## Akses Berdasarkan Role
+
+| Role | Akses | Keterangan |
+|---|---|---|
+| **Admin** | Portal Admin saja (`/admin/users`) | Tidak dapat mengakses menu transaksi (Warehouse, HR, Procurement, Aset IT, E-Approval) |
+| **Manager** | Dashboard + semua modul transaksi | Dapat approve/reject dokumen |
+| **Staff** | Dashboard + semua modul transaksi | Akses terbatas sesuai hak akses yang diatur Admin |
+
+### Portal Admin
+
+Login sebagai `admin@demo.com` akan langsung diarahkan ke **User Manager** (`/admin/users`). Admin tidak dapat mengakses halaman transaksi — jika mencoba, akan diredirect kembali ke User Manager.
+
+| Menu Admin | Deskripsi |
+|---|---|
+| **User Manager** | Daftar semua user sistem — filter by nama/email/NIP, role, status |
+| **Tambah User** | Form tambah user baru (nama, email, NIP, role, departemen, status) — password default `demo123` |
+| **Atur Hak Akses** | Per-user, per-menu, per-aksi checkbox (view / tambah / edit / nonaktif / approve / tolak) |
+| **Aktifkan/Nonaktifkan** | Toggle status user langsung dari tabel |
+
+**Hak Akses Default per Role:**
+
+| Menu | Manager | Staff |
+|---|---|---|
+| Penerimaan/Pengeluaran Barang | view, tambah | view, tambah |
+| Data Karyawan | view, tambah, edit | view |
+| Pengajuan Cuti/Sakit | view, tambah, approve | view, tambah |
+| Material Request (MR) | view, tambah, approve | view, tambah |
+| Purchase Request (PR) | view, tambah, approve | view, tambah |
+| Dokumen Approval | view, approve, tolak | — |
+
+---
+
 ## Modul & Menu Navigasi
 
 > ⚠ Semua data adalah **dummy/hardcoded**. Alur menu dan form sudah dapat disimulasikan sepenuhnya.
