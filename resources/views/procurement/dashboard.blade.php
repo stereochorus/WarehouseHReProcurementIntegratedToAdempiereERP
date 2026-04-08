@@ -105,7 +105,7 @@
                         <span class="px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full text-xs">{{ $pr['status'] }}</span>
                     </div>
                     <p class="text-sm font-medium text-gray-800 truncate">{{ $pr['item'] }}</p>
-                    <p class="text-xs text-gray-500">{{ $pr['dept'] }} | Rp {{ number_format($pr['total']) }}</p>
+                    <p class="text-xs text-gray-500">{{ $pr['proyek'] ?? '-' }} | Rp {{ number_format($pr['total']) }}</p>
                 </div>
                 @endforeach
             </div>
@@ -144,7 +144,7 @@
                         <tr>
                             <th class="px-4 py-3 text-left">No. PR</th>
                             <th class="px-4 py-3 text-left">Item</th>
-                            <th class="px-4 py-3 text-left">Dept</th>
+                            <th class="px-4 py-3 text-left">Proyek</th>
                             <th class="px-4 py-3 text-right">Total</th>
                             <th class="px-4 py-3 text-center">Status</th>
                         </tr>
@@ -154,7 +154,7 @@
                         <tr class="hover:bg-gray-50">
                             <td class="px-4 py-3 font-mono text-xs text-purple-600">{{ $pr['id'] }}</td>
                             <td class="px-4 py-3 font-medium text-gray-800 max-w-xs truncate">{{ $pr['item'] }}</td>
-                            <td class="px-4 py-3"><span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs">{{ $pr['dept'] }}</span></td>
+                            <td class="px-4 py-3"><span class="px-2 py-0.5 bg-purple-50 text-purple-700 rounded text-xs">{{ $pr['proyek'] ?? '-' }}</span></td>
                             <td class="px-4 py-3 text-right font-medium text-gray-700">Rp {{ number_format($pr['total']) }}</td>
                             <td class="px-4 py-3 text-center">
                                 <span class="px-2 py-0.5 rounded-full text-xs font-medium

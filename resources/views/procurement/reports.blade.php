@@ -83,7 +83,7 @@
                     <tr class="hover:bg-gray-50">
                         <td class="px-4 py-2.5 font-mono text-xs text-purple-600">{{ $pr['id'] }}</td>
                         <td class="px-4 py-2.5 text-gray-600 whitespace-nowrap">{{ $pr['date'] }}</td>
-                        <td class="px-4 py-2.5"><span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs">{{ $pr['dept'] }}</span></td>
+                        <td class="px-4 py-2.5"><span class="px-2 py-0.5 bg-purple-50 text-purple-700 rounded text-xs">{{ $pr['proyek'] ?? '-' }}</span></td>
                         <td class="px-4 py-2.5 font-medium text-gray-800">{{ $pr['item'] }}</td>
                         <td class="px-4 py-2.5 text-gray-600 text-xs">{{ $pr['requestor'] }}</td>
                         <td class="px-4 py-2.5 text-right font-semibold text-gray-800">Rp {{ number_format($pr['total']) }}</td>
