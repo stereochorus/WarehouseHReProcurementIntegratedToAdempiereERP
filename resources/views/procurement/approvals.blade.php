@@ -68,8 +68,8 @@
                         <p class="font-medium text-gray-800">{{ $pr['item'] }}</p>
                     </div>
                     <div>
-                        <p class="text-xs text-gray-500">Departemen</p>
-                        <p class="font-medium text-gray-800">{{ $pr['dept'] }}</p>
+                        <p class="text-xs text-gray-500">Proyek</p>
+                        <p class="font-medium text-gray-800">{{ $pr['proyek'] ?? '-' }}</p>
                     </div>
                     <div>
                         <p class="text-xs text-gray-500">Jumlah</p>

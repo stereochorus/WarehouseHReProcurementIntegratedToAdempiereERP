@@ -17,7 +17,11 @@
       "Bash(php artisan route:list --name=warehouse --compact)",
       "Bash(php artisan route:list)",
       "Bash(git add README.md app/Http/Controllers/HR/HRController.php app/Http/Controllers/Procurement/ProcurementController.php app/Http/Controllers/Warehouse/WarehouseController.php resources/views/layouts/app.blade.php routes/web.php app/Http/Controllers/AsetIT/ app/Http/Controllers/EApproval/ resources/views/aset-it/ resources/views/e-approval/ resources/views/hr/izin.blade.php resources/views/hr/pengajuan-dinas.blade.php resources/views/hr/pengajuan-spj.blade.php resources/views/hr/tunjangan.blade.php resources/views/procurement/material-request.blade.php resources/views/procurement/purchase-order.blade.php resources/views/warehouse/req-atk.blade.php resources/views/warehouse/surat-jalan.blade.php)",
-      "mcp__plugin_context-mode_context-mode__batch_execute"
+      "mcp__plugin_context-mode_context-mode__batch_execute",
+      "mcp__plugin_context-mode_context-mode__execute",
+      "mcp__plugin_context-mode_context-mode__execute_file",
+      "Bash(find \"/f/laravel project/WarehouseHReProcurementIntegratedToAdempiereERP/database\" -type f -name \"*.php\" -exec basename {} \\\\;)",
+      "Bash(php -l app/Http/Controllers/Procurement/ProcurementController.php)"
     ]
   }
 }
