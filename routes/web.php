@@ -136,10 +136,12 @@ Route::middleware('demo.auth')->group(function () {
         Route::get('/dashboard',              [EApprovalController::class, 'dashboard'])->name('dashboard');
         Route::get('/documents',              [EApprovalController::class, 'documents'])->name('documents');
         Route::get('/documents/create',       [EApprovalController::class, 'create'])->name('documents.create');
+        Route::get('/documents/export',       [EApprovalController::class, 'export'])->name('documents.export');
         Route::post('/documents',             [EApprovalController::class, 'store'])->name('documents.store');
         Route::post('/documents/{id}/approve',[EApprovalController::class, 'approve'])->name('documents.approve');
         Route::post('/documents/{id}/reject', [EApprovalController::class, 'reject'])->name('documents.reject');
         Route::get('/workflow',               [EApprovalController::class, 'workflow'])->name('workflow');
+        Route::get('/upload-status',          [EApprovalController::class, 'uploadStatus'])->name('upload-status');
     });
 
 });

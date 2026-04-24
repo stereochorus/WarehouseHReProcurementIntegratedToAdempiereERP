@@ -307,6 +307,11 @@
             <svg class="w-5 h-5 flex-shrink-0 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
             <span x-show="sidebarOpen || mobileSidebarOpen" class="ml-3 text-sm">Upload Dokumen</span>
         </a>
+        <a href="{{ route('e-approval.upload-status') }}"
+           class="nav-item flex items-center px-3 py-2.5 rounded-lg mb-1 text-slate-200 hover:text-white transition-colors {{ request()->routeIs('e-approval.upload-status') ? 'active' : '' }}">
+            <svg class="w-5 h-5 flex-shrink-0 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18M10 3v18M14 3v18"/></svg>
+            <span x-show="sidebarOpen || mobileSidebarOpen" class="ml-3 text-sm">Status Upload</span>
+        </a>
         <a href="{{ route('e-approval.workflow') }}"
            class="nav-item flex items-center px-3 py-2.5 rounded-lg mb-1 text-slate-200 hover:text-white transition-colors {{ request()->routeIs('e-approval.workflow') ? 'active' : '' }}">
             <svg class="w-5 h-5 flex-shrink-0 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/></svg>

@@ -155,12 +155,30 @@ Login sebagai `admin@demo.com` akan langsung diarahkan ke **User Manager** (`/ad
 | **Pengeluaran Aset** | Daftar aset write-off + form pengajuan pengeluaran aset tidak terpakai |
 
 ### E-Approval
-| Menu | Deskripsi |
-|---|---|
-| Dashboard | Statistik dokumen + dokumen terbaru |
-| Dokumen Approval | Daftar dokumen, filter status & jenis, riwayat approval per step, aksi Setujui/Tolak |
-| **Upload Dokumen** | Form upload dokumen + pilih Approver & Reviewer per step (Tanda Tangan / Review Only) |
-| **Workflow Approval** | Visualisasi alur approval lengkap per dokumen — siapa TTD, siapa review, status e-TTD digital simulasi |
+| Menu | URL | Deskripsi |
+|---|---|---|
+| Dashboard | `/e-approval/dashboard` | Statistik dokumen + dokumen terbaru + overdue count |
+| Dokumen Approval | `/e-approval/documents` | Daftar dokumen, ringkasan+export, filter, preview modal, riwayat approval lengkap dengan jabatan/paraf/timestamp, komentar bubble |
+| Upload Dokumen | `/e-approval/documents/create` | Form upload + Nomor Dokumen (conditional), reminder interval, approver dengan jabatan+status aksi+paraf, drag-drop TTD, preview sebelum submit |
+| **Status Upload** | `/e-approval/upload-status` | Tabel pantau seluruh dokumen — No. Dokumen, Nama, Status, Reviewer, Approver, Deadline, Overdue |
+| Workflow Approval | `/e-approval/workflow` | Visualisasi alur approval per dokumen dengan jabatan dan status aksi |
+
+#### Fitur Baru E-Approval (Penambahan Terbaru)
+
+| Fitur | Lokasi | Deskripsi |
+|---|---|---|
+| **Nomor Dokumen** | Upload Dokumen, Dokumen Approval | Ditampilkan hanya untuk jenis Proposal, Kontrak, SK, SKT, PR, MR. Format: `JENIS/DEPT/TAHUN/URUTAN` |
+| **Deadline + Overdue** | Dokumen Approval, Status Upload | Badge "Overdue" merah animasi jika dokumen Menunggu & deadline terlewati |
+| **Reminder Email** | Upload Dokumen | Pilih interval: 1 hari / 3 hari / 7 hari (simulasi pengiriman) |
+| **Jabatan Approver/Reviewer** | Semua halaman | Setiap langkah approval menampilkan nama dan jabatan |
+| **Status Aksi** | Dokumen Approval, Upload | Kolom `Prepare` / `Checked` / `Approve` per step |
+| **Paraf** | Dokumen Approval, Upload | Inisial nama dalam kotak bergaya jika sudah paraf |
+| **Export to Excel** | Dokumen Approval, Status Upload | Unduh CSV UTF-8 berisi semua data dokumen + reviewer + approver |
+| **Timestamp TTD** | Dokumen Approval, Status Upload | Waktu lengkap tanda tangan: tanggal, bulan, tahun, jam, menit, detik |
+| **Bubble Komentar** | Dokumen Approval (accordion) | Komentar per bagian dokumen dengan avatar, jabatan, waktu |
+| **Preview Dokumen** | Dokumen Approval, Upload | Modal pratinjau dokumen sebelum finalisasi dengan tabel approval |
+| **Drag & Drop TTD** | Upload Dokumen | Area interaktif untuk meletakkan posisi tanda tangan pada simulasi dokumen |
+| **Tabel Status Upload** | Status Upload | Tabel lengkap semua dokumen: 10 kolom termasuk No. Dokumen, Status, Reviewer, Approver, Deadline |
 
 ---
 
@@ -203,8 +221,11 @@ SPJ (Surat Perjalanan Dinas)
 
 ### E-Approval (Konfigurasi Bebas)
 - User memilih sendiri siapa yang **Tanda Tangan (Approve)** dan siapa yang **Review Only**
-- Bisa menambah/mengurangi step secara dinamis
+- Setiap step menampilkan **nama, jabatan, status aksi (Prepare/Checked/Approve)**, dan **paraf**
 - Simulasi tanda tangan digital (e-TTD) per step yang disetujui
+- Nomor dokumen formal untuk jenis tertentu
+- Deadline dengan deteksi otomatis **Overdue**
+- Reminder email per interval yang bisa dikonfigurasi
 
 ---
 
@@ -241,7 +262,7 @@ resources/views/
   hr/             — employees, attendance, sick-leaves, pengajuan-dinas, pengajuan-spj, tunjangan, ...
   procurement/    — material-request, pr-form, purchase-requests, purchase-order, ...
   aset-it/        — assets, history, pengeluaran, ...
-  e-approval/     — documents, create (upload), workflow, ...
+  e-approval/     — documents, create (upload), workflow, upload-status, ...
   layouts/app.blade.php  — sidebar navigasi utama
 
 routes/web.php    — semua route terdaftar di sini
