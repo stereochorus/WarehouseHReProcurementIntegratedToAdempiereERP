@@ -6,6 +6,7 @@
 @section('content')
 <div class="pt-4 fade-in"
      x-data="{
+         uploadFileName: '', uploadFileSize: '', uploadFileType: '', isDragging: false,
          steps: [{ user: '', jabatan: '', peran: 'Approve', actionStatus: 'Prepare', paraf: false }],
          jenis: '',
          jenisWithNomor: {{ json_encode($jenisWithNomor) }},
@@ -135,7 +136,7 @@
         {{-- Main Form --}}
         <div class="lg:col-span-2 space-y-5">
             <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-                <form method="POST" action="{{ route('e-approval.documents.store') }}" class="space-y-5">
+                <form method="POST" action="{{ route('e-approval.documents.store') }}" enctype="multipart/form-data" class="space-y-5">
                     @csrf
 
                     {{-- Nomor Dokumen (conditional) --}}
@@ -202,15 +203,94 @@
                         </div>
                     </div>
 
-                    {{-- Upload area --}}
+                    {{-- Upload area (real file upload) --}}
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Upload Dokumen</label>
-                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-teal-400 transition-colors">
-                            <svg class="w-10 h-10 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
-                            <p class="text-sm text-gray-500">Drag & drop atau klik untuk upload</p>
-                            <p class="text-xs text-gray-400 mt-1">PDF, DOCX, XLSX — Maks. 10MB</p>
-                            <p class="text-xs text-amber-600 mt-2">(Simulasi — file tidak benar-benar disimpan)</p>
+
+                        {{-- Hidden real file input --}}
+                        <input type="file" id="dokumenInput" name="dokumen"
+                               accept=".pdf,.doc,.docx,.xls,.xlsx"
+                               class="hidden"
+                               @change="
+                                   const f = $event.target.files[0];
+                                   if (!f) return;
+                                   if (f.size > 10 * 1024 * 1024) { alert('Ukuran file maksimal 10MB'); $event.target.value=''; return; }
+                                   uploadFileName = f.name;
+                                   uploadFileSize = (f.size / 1024 / 1024).toFixed(2) + ' MB';
+                                   uploadFileType = f.name.split('.').pop().toUpperCase();
+                               ">
+
+                        {{-- Drop zone --}}
+                        <div class="border-2 rounded-xl transition-all duration-150 cursor-pointer"
+                             :class="isDragging
+                                 ? 'border-teal-400 bg-teal-50 scale-[1.01]'
+                                 : (uploadFileName ? 'border-teal-300 bg-teal-50/40' : 'border-dashed border-gray-300 hover:border-teal-400 hover:bg-gray-50')"
+                             @dragover.prevent="isDragging = true"
+                             @dragleave.prevent="isDragging = false"
+                             @drop.prevent="
+                                 isDragging = false;
+                                 const f = $event.dataTransfer.files[0];
+                                 if (!f) return;
+                                 if (f.size > 10 * 1024 * 1024) { alert('Ukuran file maksimal 10MB'); return; }
+                                 const allowed = ['pdf','doc','docx','xls','xlsx'];
+                                 const ext = f.name.split('.').pop().toLowerCase();
+                                 if (!allowed.includes(ext)) { alert('Format tidak didukung. Gunakan: PDF, DOC, DOCX, XLS, XLSX'); return; }
+                                 uploadFileName = f.name;
+                                 uploadFileSize = (f.size / 1024 / 1024).toFixed(2) + ' MB';
+                                 uploadFileType = ext.toUpperCase();
+                                 const dt = new DataTransfer(); dt.items.add(f);
+                                 document.getElementById('dokumenInput').files = dt.files;
+                             "
+                             @click="if (!uploadFileName) document.getElementById('dokumenInput').click()">
+
+                            {{-- Empty state --}}
+                            <template x-if="!uploadFileName">
+                                <div class="p-8 text-center select-none">
+                                    <svg class="w-10 h-10 mx-auto mb-3 transition-colors"
+                                         :class="isDragging ? 'text-teal-400' : 'text-gray-300'"
+                                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                    </svg>
+                                    <p class="text-sm font-medium"
+                                       :class="isDragging ? 'text-teal-600' : 'text-gray-500'"
+                                       x-text="isDragging ? 'Lepaskan file di sini...' : 'Drag & drop atau klik untuk pilih file'"></p>
+                                    <p class="text-xs text-gray-400 mt-1">PDF, DOC, DOCX, XLS, XLSX — Maks. 10MB</p>
+                                </div>
+                            </template>
+
+                            {{-- File selected state --}}
+                            <template x-if="uploadFileName">
+                                <div class="p-4 flex items-center gap-4">
+                                    <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 font-bold text-xs"
+                                         :class="{
+                                             'bg-red-100 text-red-600':   uploadFileType === 'PDF',
+                                             'bg-green-100 text-green-600': uploadFileType === 'XLS' || uploadFileType === 'XLSX',
+                                             'bg-blue-100 text-blue-600':  uploadFileType === 'DOC' || uploadFileType === 'DOCX',
+                                         }"
+                                         x-text="uploadFileType">
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-semibold text-gray-800 truncate" x-text="uploadFileName"></p>
+                                        <p class="text-xs text-gray-500 mt-0.5">
+                                            <span x-text="uploadFileSize"></span>
+                                            <span class="ml-2 text-teal-600 font-medium">✓ Siap diupload</span>
+                                        </p>
+                                    </div>
+                                    <div class="flex gap-3 flex-shrink-0">
+                                        <button type="button"
+                                                @click.stop="document.getElementById('dokumenInput').click()"
+                                                class="text-xs text-teal-600 hover:text-teal-800 font-medium">Ganti</button>
+                                        <button type="button"
+                                                @click.stop="uploadFileName=''; uploadFileSize=''; uploadFileType=''; document.getElementById('dokumenInput').value='';"
+                                                class="text-xs text-red-500 hover:text-red-700 font-medium">Hapus</button>
+                                    </div>
+                                </div>
+                            </template>
                         </div>
+
+                        @error('dokumen')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     {{-- Approver & Reviewer Steps --}}
@@ -398,8 +478,8 @@
                 <div class="flex items-start gap-2">
                     <svg class="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                     <div>
-                        <p class="text-xs font-semibold text-amber-800">Mode Simulasi</p>
-                        <p class="text-xs text-amber-700 mt-1">Upload file, penempatan TTD, dan pengiriman reminder berjalan sebagai simulasi. Di lingkungan produksi, semua akan terintegrasi secara nyata.</p>
+                        <p class="text-xs font-semibold text-amber-800">Catatan</p>
+                        <p class="text-xs text-amber-700 mt-1">Upload file <strong>tersimpan nyata</strong> ke server (<code>storage/e-approval/</code>). Penempatan TTD drag-and-drop dan pengiriman reminder email masih simulasi.</p>
                     </div>
                 </div>
             </div>

@@ -236,11 +236,31 @@ class EApprovalController extends Controller
             'tgl_deadline' => 'required|date|after:today',
             'ttd_digital'  => 'nullable',
             'keterangan'   => 'nullable|string',
+            'dokumen'      => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx|max:10240',
         ]);
 
-        $id = 'DOC-' . date('Y') . '-' . str_pad(rand(32, 999), 4, '0', STR_PAD_LEFT);
-        return redirect()->route('e-approval.documents')
-            ->with('success', 'Dokumen berhasil diajukan! No. Dokumen: ' . $id . ' — "' . $request->judul . '". Status: Menunggu persetujuan.');
+        $id = 'DOC-' . date('Y') . '-' . str_pad(rand(32, 9999), 4, '0', STR_PAD_LEFT);
+
+        $fileMsg = '';
+        if ($request->hasFile('dokumen') && $request->file('dokumen')->isValid()) {
+            $file     = $request->file('dokumen');
+            $origName = $file->getClientOriginalName();
+            $ext      = $file->getClientOriginalExtension();
+            $safeName = $id . '_' . time() . '.' . $ext;
+
+            // Store to public/uploads/e-approval/ — accessible without storage:link
+            $destDir = public_path('uploads/e-approval');
+            if (!is_dir($destDir)) {
+                mkdir($destDir, 0755, true);
+            }
+            $file->move($destDir, $safeName);
+
+            $fileMsg = ' File "<strong>' . e($origName) . '</strong>" berhasil disimpan.';
+        }
+
+        $msg = 'Dokumen berhasil diajukan! No. Dokumen: <strong>' . $id . '</strong> — "' . e($request->judul) . '". Status: Menunggu persetujuan.' . $fileMsg;
+
+        return redirect()->route('e-approval.documents')->with('success', $msg);
     }
 
     public function approve(Request $request, $id)
