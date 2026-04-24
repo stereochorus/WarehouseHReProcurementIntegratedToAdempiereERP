@@ -66,7 +66,7 @@
                                     class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500">
                                 <option value="">-- Pilih User / Jabatan --</option>
                                 @foreach($users as $u)
-                                <option value="{{ $u }}">{{ $u }}</option>
+                                <option value="{{ $u['nama'] }}">{{ $u['nama'] }} — {{ $u['jabatan'] }}</option>
                                 @endforeach
                             </select>
                             <select x-model="step.peran" :name="'step_peran[]'"
@@ -145,18 +145,34 @@
                             </div>
                             <div class="text-center mt-1.5 px-1">
                                 <p class="text-xs font-semibold text-gray-700 leading-tight">{{ $step['nama'] }}</p>
-                                <span class="inline-block text-xs px-1.5 py-0.5 rounded mt-0.5
-                                    {{ $step['peran'] === 'Approve' ? 'bg-teal-100 text-teal-700' : 'bg-blue-100 text-blue-600' }}">
-                                    {{ $step['peran'] === 'Approve' ? 'TTD' : 'Review' }}
-                                </span>
+                                <p class="text-xs text-gray-400 leading-tight">{{ $step['jabatan'] }}</p>
+                                <div class="flex items-center justify-center gap-1 mt-1 flex-wrap">
+                                    <span class="inline-block text-xs px-1.5 py-0.5 rounded
+                                        {{ $step['peran'] === 'Approve' ? 'bg-teal-100 text-teal-700' : 'bg-blue-100 text-blue-600' }}">
+                                        {{ $step['peran'] === 'Approve' ? 'TTD' : 'Review' }}
+                                    </span>
+                                    @php
+                                        $asCls = match($step['action_status'] ?? 'Prepare') {
+                                            'Approve' => 'bg-green-100 text-green-700',
+                                            'Checked' => 'bg-indigo-100 text-indigo-700',
+                                            default   => 'bg-gray-100 text-gray-500',
+                                        };
+                                    @endphp
+                                    <span class="inline-block text-xs px-1.5 py-0.5 rounded {{ $asCls }}">
+                                        {{ $step['action_status'] ?? 'Prepare' }}
+                                    </span>
+                                </div>
                                 @if($step['status'] === 'Disetujui' && $step['ttd'])
                                 <div class="flex items-center justify-center gap-1 mt-1">
                                     <svg class="w-3 h-3 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
                                     <span class="text-xs text-green-600">e-TTD</span>
                                 </div>
                                 @endif
-                                @if($step['catatan'] !== '-')
+                                @if(($step['catatan'] ?? '-') !== '-')
                                 <p class="text-xs text-gray-400 mt-0.5 italic truncate max-w-[90px]" title="{{ $step['catatan'] }}">"{{ $step['catatan'] }}"</p>
+                                @endif
+                                @if($step['tgl'] !== '-')
+                                <p class="text-xs text-gray-300 mt-0.5 truncate max-w-[90px]">{{ $step['tgl'] }}</p>
                                 @endif
                             </div>
                         </div>
